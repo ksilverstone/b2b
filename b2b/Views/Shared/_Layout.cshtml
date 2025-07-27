@@ -1,0 +1,112 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - B2B Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    
+    <!-- Material Design CSS -->
+    <link rel="stylesheet" href="~/css/bootstrap-material.css" />
+    <link rel="stylesheet" href="~/css/shreerang-material.css" />
+    <link rel="stylesheet" href="~/css/uikit.css" />
+    
+    <!-- Perfect Scrollbar -->
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/perfect-scrollbar.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/fonts/fontawesome.css" />
+    
+    <!-- Feather Icons -->
+    <link rel="stylesheet" href="~/fonts/feather.css" />
+</head>
+<body>
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+
+            @* 🔹 Sidebar burada yer alıyor *@
+            @await Html.PartialAsync("~/Views/Shared/_Sidebar.cshtml")
+
+            <div class="layout-page">
+
+                <!-- Navbar -->
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                            <li class="nav-item lh-1 me-3">
+                                <span class="fw-semibold d-block">Merhaba</span>
+                                <small>@User.Identity?.Name</small>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Auth" asp-action="Logout" class="nav-link">
+                                    <i class="feather icon-log-out"></i>
+                                    <span>Çıkış</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- 🔸 Sayfa içeriği burada -->
+                <div class="content-wrapper">
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        @RenderBody()
+                    </div>
+                </div>
+
+            </div> <!-- /layout-page -->
+        </div> <!-- /layout-container -->
+    </div> <!-- /layout-wrapper -->
+
+    <!-- Footer -->
+    <footer class="content-footer footer bg-footer-theme">
+        <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+            <div class="mb-2 mb-md-0">
+                © 2025 - B2B Portal
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="~/js/bootstrap.js"></script>
+    
+    <!-- Popper.js -->
+    <script src="~/lib/popper/popper.js"></script>
+    
+    <!-- Perfect Scrollbar -->
+    <script src="~/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
+    
+    <!-- Material Ripple -->
+    <script src="~/js/material-ripple.js"></script>
+    
+    <!-- Layout Helpers -->
+    <script src="~/js/layout-helpers.js"></script>
+    
+    <!-- Sidenav -->
+    <script src="~/js/sidenav.js"></script>
+    
+    <!-- Demo -->
+    <script src="~/js/demo.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="~/js/site.js"></script>
+
+    <!-- Sayfa özel script -->
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
