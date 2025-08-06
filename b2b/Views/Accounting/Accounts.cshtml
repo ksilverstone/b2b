@@ -1,0 +1,1089 @@
+﻿@model List<b2b.Controllers.AccountViewModel>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="tr" class="default-style layout-fixed layout-navbar-fixed">
+
+<head>
+    <title>B2B Portal | Cari Listesi</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="B2B Portal - İşletmeler arası ticaret platformu">
+    <meta name="keywords" content="b2b, ticaret, işletme, portal">
+    <meta name="author" content="B2B Portal">
+    <link rel="icon" type="image/x-icon" href="~/img/favicon.ico">
+
+    <!-- Google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+
+    <!-- Icon fonts -->
+    <link rel="stylesheet" href="~/fonts/fontawesome.css">
+    <link rel="stylesheet" href="~/fonts/ionicons.css">
+    <link rel="stylesheet" href="~/fonts/linearicons.css">
+    <link rel="stylesheet" href="~/fonts/open-iconic.css">
+    <link rel="stylesheet" href="~/fonts/pe-icon-7-stroke.css">
+    <link rel="stylesheet" href="~/fonts/feather.css">
+
+    <!-- Core stylesheets -->
+    <link rel="stylesheet" href="~/css/bootstrap-material.css">
+    <link rel="stylesheet" href="~/css/shreerang-material.css">
+    <link rel="stylesheet" href="~/css/uikit.css">
+
+    <!-- Libs -->
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="~/lib/flot/flot.css">
+
+
+
+    <style>
+        /* Özel stiller */
+        .btn-new-customer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        /* Empire Admin Live UI Personalize kısmını gizle */
+        .demo-navbar-user .dropdown-menu a[href*="personalize"],
+        .demo-navbar-user .dropdown-menu a[href*="Empire"] {
+            display: none !important;
+        }
+        
+        .btn-new-customer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-inactive {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        .table-action .btn {
+            margin: 0 2px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .table-action .btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .expandable-row {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .expandable-row:hover {
+            background-color: #f8f9fc !important;
+        }
+        
+        .expanded-details {
+            display: none;
+            background-color: #f8f9fc;
+            border-top: 1px solid #e3e6f0;
+        }
+        
+        .expanded-details.show {
+            display: table-row;
+        }
+        
+        .expanded-content {
+            padding: 20px;
+            background-color: #f8f9fc;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #5a5c69;
+        }
+        
+        .detail-value {
+            color: #858796;
+        }
+        
+        .filter-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-card .card-body {
+            padding: 1.25rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #5a5c69;
+            margin-bottom: 0.5rem;
+        }
+        
+        .custom-select {
+            border-radius: 0.375rem;
+            border: 1px solid #d1d3e2;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .custom-select:focus {
+            border-color: #bac8f3;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .form-control {
+            border-radius: 0.375rem;
+            border: 1px solid #d1d3e2;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .form-control:focus {
+            border-color: #bac8f3;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- [ Preloader ] Start -->
+    <div class="page-loader">
+        <div class="bg-primary"></div>
+    </div>
+    <!-- [ Preloader ] End -->
+    
+    <!-- [ Layout wrapper ] Start -->
+    <div class="layout-wrapper layout-2">
+        <div class="layout-inner">
+            <!-- [ Layout sidenav ] Start -->
+            @await Html.PartialAsync("_Sidebar")
+            <!-- [ Layout sidenav ] End -->
+            
+            <!-- [ Layout container ] Start -->
+            <div class="layout-container">
+                <!-- [ Layout navbar ( Header ) ] Start -->
+                <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-dark container-p-x" id="layout-navbar">
+
+                    <!-- Brand demo (see ~/css/demo/demo.css) -->
+                    <a href="/Home/Index" class="navbar-brand app-brand demo d-lg-none py-0 mr-4">
+                        <span class="app-brand-logo demo">
+                            <i class="feather icon-shopping-bag"></i>
+                        </span>
+                        <span class="app-brand-text demo font-weight-normal ml-2">B2B Portal</span>
+                    </a>
+
+                    <!-- Sidenav toggle (see ~/css/demo/demo.css) -->
+                    <div class="layout-sidenav-toggle navbar-nav d-lg-none align-items-lg-center mr-auto">
+                        <a class="nav-item nav-link px-0 mr-lg-4" href="javascript:">
+                            <i class="ion ion-md-menu text-large align-middle"></i>
+                        </a>
+                    </div>
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="navbar-collapse collapse" id="layout-navbar-collapse">
+                        <!-- Divider -->
+                        <hr class="d-lg-none w-100 my-2">
+
+                        <div class="navbar-nav align-items-lg-center">
+                            <!-- Search -->
+                            <label class="nav-item navbar-text navbar-search-box p-0 active">
+                                <i class="feather icon-search navbar-icon align-middle"></i>
+                                <span class="navbar-search-input pl-2">
+                                    <input type="text" class="form-control navbar-text mx-2" placeholder="Ara...">
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="navbar-nav align-items-lg-center ml-auto">
+                            <div class="demo-navbar-notifications nav-item dropdown mr-lg-3">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="#" data-toggle="dropdown">
+                                    <i class="feather icon-bell navbar-icon align-middle"></i>
+                                    <span class="badge badge-danger badge-dot indicator"></span>
+                                    <span class="d-lg-none align-middle">&nbsp; Bildirimler</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <div class="bg-primary text-center text-white font-weight-bold p-3">
+                                        5 Yeni Bildirim
+                                    </div>
+                                    <div class="list-group list-group-flush">
+                                        <a href="javascript:" class="list-group-item list-group-item-action media d-flex">
+                                            <div class="ui-icon ui-icon-sm feather icon-home bg-primary border-0 text-white rounded-circle mr-3"></div>
+                                            <div class="media-body text-muted">
+                                                <div class="text-semibold">Yeni sipariş alındı</div>
+                                                <small class="text-muted">2 dakika önce</small>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="demo-navbar-user nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                                    <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                                        <img src="~/img/avatars/1.png" alt="" class="d-block ui-w-30 rounded-circle">
+                                        <span class="px-1 mr-lg-2 ml-2 ml-lg-0">@User.Identity?.Name</span>
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-user text-muted"></i> &nbsp; Profil
+                                    </a>
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-settings text-muted"></i> &nbsp; Ayarlar
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="/Auth/Logout" class="dropdown-item">
+                                        <i class="feather icon-log-out text-muted"></i> &nbsp; Çıkış
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <!-- [ Layout navbar ( Header ) ] End -->
+
+                <!-- [ Layout content ] Start -->
+                <div class="layout-content">
+                    <div class="container-fluid flex-grow-1 container-p-y">
+                        <!-- Başlık ve Yeni Cari Butonu -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="font-weight-bold py-3 mb-0">Cari Listesi</h4>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-account">
+                                    <i class="feather icon-plus mr-2"></i> Yeni Cari
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#!">Cari Yönetimi</a></li>
+                                <li class="breadcrumb-item active"><a href="#!">Cari Listesi</a></li>
+                            </ol>
+                        </div>
+
+                        <!-- Filtreler -->
+                        <div class="card filter-card">
+                            <div class="card-body">
+                                <div class="form-row align-items-center">
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Durum</label>
+                                        <select class="custom-select" id="statusFilter">
+                                            <option value="">Tümü</option>
+                                            <option value="Aktif">Aktif</option>
+                                            <option value="Pasif">Pasif</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Arama</label>
+                                        <input type="text" class="form-control" id="searchFilter" placeholder="Cari adı veya e-posta ile ara...">
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Cari Grubu</label>
+                                        <select class="custom-select" id="groupFilter">
+                                            <option value="">Tümü</option>
+                                            <option value="Müşteri">Müşteri</option>
+                                            <option value="Tedarikçi">Tedarikçi</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Bakiye Aralığı</label>
+                                        <select class="custom-select" id="balanceFilter">
+                                            <option value="">Tümü</option>
+                                            <option value="positive">Pozitif Bakiye</option>
+                                            <option value="negative">Negatif Bakiye</option>
+                                            <option value="zero">Sıfır Bakiye</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Kayıt Tarihi</label>
+                                        <input type="date" class="form-control" id="startDateFilter" placeholder="Başlangıç tarihi">
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Bitiş Tarihi</label>
+                                        <input type="date" class="form-control" id="endDateFilter" placeholder="Bitiş tarihi">
+                                    </div>
+                                    <div class="col-md col-xl-2 my-2">
+                                        <label class="form-label d-none d-md-block">&nbsp;</label>
+                                        <div class="btn-group btn-block" role="group">
+                                            <button type="button" class="btn btn-primary" id="applyFilters">
+                                                <i class="feather icon-filter mr-1"></i> Filtrele
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="clearFilters">
+                                                <i class="feather icon-refresh-cw mr-1"></i> Temizle
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Cari Listesi -->
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="accounts-table" class="table mb-0">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Tarih</th>
+                                                        <th>Cari Adı</th>
+                                                        <th>Cari Grubu</th>
+                                                        <th>E-posta</th>
+                                                        <th>Telefon</th>
+                                                        <th>Bakiye (₺)</th>
+                                                        <th>Durum</th>
+                                                        <th>İşlemler</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var account in Model)
+                                                    {
+                                                        <tr class="expandable-row" data-id="@account.Id">
+                                                            <td class="align-middle">
+                                                                @(account.LastTransactionDate?.ToString("dd.MM.yyyy") ?? account.CreatedDate.ToString("dd.MM.yyyy"))
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <div>
+                                                                    <a href="#!" class="text-body font-weight-semibold">@account.Name</a>
+                                                                    <div class="text-muted small">Cari No: @account.Id</div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                @account.Group
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                @account.Email
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                @account.Phone
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <span class="@(account.Balance >= 0 ? "text-success" : "text-danger") font-weight-semibold">
+                                                                    @account.Balance.ToString("N2") ₺
+                                                                </span>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                @if (account.Status == "Aktif")
+                                                                {
+                                                                    <span class="status-badge status-active">@account.Status</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="status-badge status-inactive">@account.Status</span>
+                                                                }
+                                                            </td>
+                                                            <td class="table-action">
+                                                                <a href="/Accounting/Statement/@account.Id" class="btn btn-icon btn-outline-primary" title="Cari Ekstresi Görüntüle">
+                                                                    <i class="feather icon-file-text"></i>
+                                                                </a>
+                                                                <a href="/Accounting/CustomerOrderHistory/@account.Id" class="btn btn-icon btn-outline-info" title="Sipariş Geçmişini Gör">
+                                                                    <i class="feather icon-shopping-cart"></i>
+                                                                </a>
+                                                                <a href="#!" class="btn btn-icon btn-outline-success" title="Carinin Bilgilerini Düzenle" onclick="editAccount(@account.Id)">
+                                                                    <i class="feather icon-edit"></i>
+                                                                </a>
+                                                                <a href="#!" class="btn btn-icon btn-outline-danger" title="Carileri Sil" onclick="deleteAccount(@account.Id)">
+                                                                    <i class="feather icon-trash-2"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <!-- Expandable Row Details -->
+                                                        <tr class="expanded-details" id="details-@account.Id">
+                                                            <td colspan="8">
+                                                                <div class="expanded-content">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <div class="detail-item">
+                                                                                <span class="detail-label">Vergi Numarası:</span>
+                                                                                <span class="detail-value">@(string.IsNullOrEmpty(account.TaxNumber) ? "-" : account.TaxNumber)</span>
+                                                                            </div>
+                                                                            <div class="detail-item">
+                                                                                <span class="detail-label">Vergi Dairesi:</span>
+                                                                                <span class="detail-value">@(string.IsNullOrEmpty(account.TaxOffice) ? "-" : account.TaxOffice)</span>
+                                                                            </div>
+                                                                            <div class="detail-item">
+                                                                                <span class="detail-label">Kayıt Tarihi:</span>
+                                                                                <span class="detail-value">@account.CreatedDate.ToString("dd.MM.yyyy")</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="detail-item">
+                                                                                <span class="detail-label">Adres:</span>
+                                                                                <span class="detail-value">@(string.IsNullOrEmpty(account.Address) ? "-" : account.Address)</span>
+                                                                            </div>
+                                                                            <div class="detail-item">
+                                                                                <span class="detail-label">İletişim Kişisi:</span>
+                                                                                <span class="detail-value">@account.Name</span>
+                                                                            </div>
+                                                                            <div class="detail-item">
+                                                                                <span class="detail-label">Son İşlem:</span>
+                                                                                <span class="detail-value">@(account.LastTransactionDate.HasValue && account.LastTransactionDate.Value > DateTime.MinValue ? account.LastTransactionDate.Value.ToString("dd.MM.yyyy") : "-")</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Yeni Cari Ekleme Modal -->
+<div class="modal fade" id="modal-add-account" tabindex="-1" role="dialog" aria-labelledby="modal-add-account-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Cari Ekle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addAccountForm">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountName">Cari Adı</label>
+                                <input type="text" class="form-control" id="AccountName" placeholder="Cari adını giriniz" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountEmail">E-posta</label>
+                                <input type="email" class="form-control" id="AccountEmail" placeholder="E-posta adresini giriniz" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountPhone">Telefon</label>
+                                <input type="text" class="form-control" id="AccountPhone" placeholder="Telefon numarasını giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountAddress">Adres</label>
+                                <input type="text" class="form-control" id="AccountAddress" placeholder="Adres bilgisini giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountTaxNumber">Vergi Numarası</label>
+                                <input type="text" class="form-control" id="AccountTaxNumber" placeholder="Vergi numarasını giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountTaxOffice">Vergi Dairesi</label>
+                                <input type="text" class="form-control" id="AccountTaxOffice" placeholder="Vergi dairesini giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountBalance">Başlangıç Bakiyesi</label>
+                                <input type="number" step="0.01" class="form-control" id="AccountBalance" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="AccountGroup">Cari Grubu</label>
+                                <select class="form-control" id="AccountGroup">
+                                    <option value="Müşteri">Müşteri</option>
+                                    <option value="Tedarikçi">Tedarikçi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="switcher">
+                                <input type="checkbox" class="switcher-input" checked="">
+                                <span class="switcher-indicator">
+                                    <span class="switcher-yes"></span>
+                                    <span class="switcher-no"></span>
+                                </span>
+                                <span class="switcher-label">Aktif</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                            <button type="button" class="btn btn-danger" onclick="clearForm()">Temizle</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cari Düzenleme Modal -->
+<div class="modal fade" id="modal-edit-account" tabindex="-1" role="dialog" aria-labelledby="modal-edit-account-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cari Düzenle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editAccountForm">
+                    <input type="hidden" id="EditAccountId">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="EditAccountName">Cari Adı</label>
+                                <input type="text" class="form-control" id="EditAccountName" placeholder="Cari adını giriniz" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="EditAccountEmail">E-posta</label>
+                                <input type="email" class="form-control" id="EditAccountEmail" placeholder="E-posta adresini giriniz" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="EditAccountPhone">Telefon</label>
+                                <input type="text" class="form-control" id="EditAccountPhone" placeholder="Telefon numarasını giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="EditAccountAddress">Adres</label>
+                                <input type="text" class="form-control" id="EditAccountAddress" placeholder="Adres bilgisini giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="EditAccountTaxNumber">Vergi Numarası</label>
+                                <input type="text" class="form-control" id="EditAccountTaxNumber" placeholder="Vergi numarasını giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="EditAccountTaxOffice">Vergi Dairesi</label>
+                                <input type="text" class="form-control" id="EditAccountTaxOffice" placeholder="Vergi dairesini giriniz">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="floating-label" for="EditAccountBalance">Bakiye</label>
+                                <input type="number" step="0.01" class="form-control" id="EditAccountBalance" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="switcher">
+                                <input type="checkbox" class="switcher-input" id="EditAccountIsActive" checked="">
+                                <span class="switcher-indicator">
+                                    <span class="switcher-yes"></span>
+                                    <span class="switcher-no"></span>
+                                </span>
+                                <span class="switcher-label">Aktif</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-primary">Güncelle</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+    <!-- [ Layout content ] End -->
+</div>
+<!-- [ Layout container ] End -->
+</div>
+<!-- [ Layout inner ] End -->
+</div>
+<!-- [ Layout wrapper ] End -->
+
+    <!-- jQuery - CDN'den yükle -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="~/js/bootstrap.js"></script>
+    
+    <!-- Core scripts -->
+    <script src="~/js/pace.js"></script>
+    <script src="~/lib/popper/popper.js"></script>
+    <script src="~/js/sidenav.js"></script>
+    <script src="~/js/layout-helpers.js"></script>
+    <script src="~/js/material-ripple.js"></script>
+
+    <!-- Demo - Kaldırıldı çünkü jQuery çakışması yaratıyor -->
+    <!-- <script src="~/js/demo.js"></script> -->
+
+<script>
+    // jQuery'nin yüklendiğinden emin ol
+    if (typeof jQuery === 'undefined') {
+        console.error('jQuery yüklenemedi!');
+    } else {
+        console.log('jQuery başarıyla yüklendi, versiyon:', jQuery.fn.jquery);
+    }
+
+    $(document).ready(function() {
+        console.log('Document ready çalıştı');
+        
+        // Sidebar'ı yeniden başlat
+        if (typeof sidenav !== 'undefined') {
+            sidenav.init();
+        }
+        
+        // Sidebar toggle işlevini manuel olarak ekle
+        $('.sidenav-toggle').on('click', function(e) {
+            e.preventDefault();
+            var $parent = $(this).closest('.sidenav-item');
+            var $submenu = $parent.find('.sidenav-menu');
+            
+            // Diğer açık menüleri kapat
+            $('.sidenav-menu').not($submenu).slideUp();
+            $('.sidenav-item').not($parent).removeClass('open');
+            
+            // Bu menüyü aç/kapat
+            $parent.toggleClass('open');
+            $submenu.slideToggle();
+        });
+        
+        // Basit tablo (DataTables olmadan)
+
+        // Filtreleme fonksiyonu
+        $('#applyFilters').on('click', function() {
+            var statusFilter = $('#statusFilter').val();
+            var groupFilter = $('#groupFilter').val();
+            var balanceFilter = $('#balanceFilter').val();
+            var searchFilter = $('#searchFilter').val();
+            var startDateFilter = $('#startDateFilter').val();
+            var endDateFilter = $('#endDateFilter').val();
+            
+            // Tüm satırları gizle
+            $('.expandable-row').hide();
+            $('.expanded-details').hide(); // Detay satırlarını da gizle
+            
+            // Filtreleme
+            $('.expandable-row').each(function() {
+                var row = $(this);
+                var name = row.find('td:eq(1)').text().trim();
+                var email = row.find('td:eq(3)').text().trim();
+                var group = row.find('td:eq(2)').text().trim();
+                var status = row.find('td:eq(6)').text().trim();
+                var balanceText = row.find('td:eq(5)').text().trim();
+                var balance = parseFloat(balanceText.replace(/[^\d.-]/g, '')) || 0;
+                var dateText = row.find('td:eq(0)').text().trim();
+                var date = new Date(dateText.split('.').reverse().join('-'));
+                
+                var showRow = true;
+                
+                // Arama filtresi
+                if (searchFilter) {
+                    var searchLower = searchFilter.toLowerCase();
+                    if (!name.toLowerCase().includes(searchLower) && !email.toLowerCase().includes(searchLower)) {
+                        showRow = false;
+                    }
+                }
+                
+                // Cari Grubu filtresi
+                if (groupFilter && group !== groupFilter) {
+                    showRow = false;
+                }
+                
+                // Durum filtresi
+                if (statusFilter && status !== statusFilter) {
+                    showRow = false;
+                }
+                
+                // Bakiye filtresi
+                if (balanceFilter) {
+                    if (balanceFilter === 'positive' && balance <= 0) showRow = false;
+                    if (balanceFilter === 'negative' && balance >= 0) showRow = false;
+                    if (balanceFilter === 'zero' && balance !== 0) showRow = false;
+                }
+                
+                // Tarih filtresi
+                if (startDateFilter && date < new Date(startDateFilter)) {
+                    showRow = false;
+                }
+                if (endDateFilter && date > new Date(endDateFilter)) {
+                    showRow = false;
+                }
+                
+                if (showRow) {
+                    row.show();
+                }
+            });
+        });
+        
+        // Filtreleri temizle
+        $('#clearFilters').on('click', function() {
+            $('#statusFilter').val('');
+            $('#groupFilter').val('');
+            $('#balanceFilter').val('');
+            $('#searchFilter').val('');
+            $('#startDateFilter').val('');
+            $('#endDateFilter').val('');
+            $('.expandable-row').show();
+            $('.expanded-details').hide(); // Detay satırlarını gizle
+        });
+
+        // Expandable row functionality
+        $('.expandable-row').on('click', function(e) {
+            // Eğer tıklanan element bir buton ise expand yapma
+            if ($(e.target).closest('.table-action').length > 0) {
+                return;
+            }
+            
+            var rowId = $(this).data('id');
+            var detailsRow = $('#details-' + rowId);
+            
+            // Diğer açık satırları kapat
+            $('.expanded-details').not(detailsRow).removeClass('show').hide();
+            $('.expandable-row').not(this).removeClass('bg-light');
+            
+            // Bu satırı aç/kapat
+            if (detailsRow.hasClass('show')) {
+                detailsRow.removeClass('show').hide();
+                $(this).removeClass('bg-light');
+            } else {
+                detailsRow.addClass('show').show();
+                $(this).addClass('bg-light');
+            }
+        });
+
+        // Form submit
+        $('#addAccountForm').on('submit', function(e) {
+            e.preventDefault();
+            addAccount();
+        });
+        
+        // Düzenleme form submit
+        $('#editAccountForm').on('submit', function(e) {
+            e.preventDefault();
+            updateAccount();
+        });
+        
+        // Modal kapatma işlevi
+        $('.modal .close, .modal .btn-secondary').on('click', function() {
+            $(this).closest('.modal').modal('hide');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+        });
+
+        // Modal kapatma işlevi
+        $('.modal .close, .modal .btn-secondary').on('click', function() {
+            $(this).closest('.modal').modal('hide');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+        });
+
+        // Modal dışına tıklayınca kapatma
+        $('.modal').on('click', function(e) {
+            if (e.target === this) {
+                $(this).modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        });
+
+        // Modal açıldığında formu temizle
+        $('#modal-add-account').on('show.bs.modal', function() {
+            clearForm();
+        });
+
+        // Modal kapandığında formu temizle
+        $('#modal-add-account').on('hidden.bs.modal', function() {
+            clearForm();
+        });
+    });
+
+    function addAccount() {
+        var accountData = {
+            Name: $('#AccountName').val(),
+            Email: $('#AccountEmail').val(),
+            Phone: $('#AccountPhone').val(),
+            Address: $('#AccountAddress').val(),
+            TaxNumber: $('#AccountTaxNumber').val(),
+            TaxOffice: $('#AccountTaxOffice').val(),
+            Balance: parseFloat($('#AccountBalance').val()) || 0,
+            Group: $('#AccountGroup').val(),
+            IsActive: $('.switcher-input').is(':checked')
+        };
+
+        console.log('IsActive değeri:', $('.switcher-input').is(':checked'));
+        console.log('Gönderilecek veri:', accountData);
+
+        // Validasyon
+        if (!accountData.Name || !accountData.Email) {
+            alert('Cari adı ve e-posta alanları zorunludur!');
+            return;
+        }
+
+        // AJAX ile sunucuya gönder
+        $.ajax({
+            url: '/Accounting/AddAccount',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(accountData),
+            success: function(response) {
+                if (response.success) {
+                    // Başarı mesajı göster
+                    alert(response.message);
+                    
+                    // Modal'ı kapat
+                    $('#modal-add-account').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                    
+                    // Formu temizle
+                    clearForm();
+                    
+                    // Sayfayı yenile (güncel veriler için)
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                } else {
+                    alert('Hata: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Bir hata oluştu! Detay: ' + xhr.responseText);
+            }
+        });
+    }
+
+    function editAccount(id) {
+        console.log('Düzenleme işlemi başlatıldı, ID:', id);
+        
+        // Cari bilgilerini getir
+        $.ajax({
+            url: '/Accounting/GetAccount',
+            type: 'GET',
+            data: { id: id },
+            success: function(response) {
+                console.log('Düzenleme response:', response);
+                if (response.success) {
+                    var account = response.account;
+                    
+                    // Modal'ı doldur
+                    $('#EditAccountId').val(account.id);
+                    $('#EditAccountName').val(account.name);
+                    $('#EditAccountEmail').val(account.email);
+                    $('#EditAccountPhone').val(account.phone);
+                    $('#EditAccountAddress').val(account.address);
+                    $('#EditAccountTaxNumber').val(account.taxNumber);
+                    $('#EditAccountTaxOffice').val(account.taxOffice);
+                    $('#EditAccountBalance').val(account.balance);
+                    $('#EditAccountIsActive').prop('checked', account.status === 'Aktif');
+                    
+                    // Modal'ı aç
+                    $('#modal-edit-account').modal('show');
+                } else {
+                    alert('Hata: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Düzenleme hatası:', xhr.responseText);
+                alert('Bir hata oluştu! Detay: ' + xhr.responseText);
+            }
+        });
+    }
+
+    function deleteAccount(id) {
+        if (confirm('Bu cariyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
+            console.log('Silme işlemi başlatıldı, ID:', id);
+            
+            $.ajax({
+                url: '/Accounting/DeleteAccount',
+                type: 'POST',
+                data: { id: id },
+                success: function(response) {
+                    console.log('Silme response:', response);
+                    if (response.success) {
+                        // Başarı mesajı göster
+                        alert(response.message);
+                        
+                        // Satırı gizle ve animasyon ekle
+                        var row = $('.expandable-row[data-id="' + id + '"]');
+                        var detailsRow = $('#details-' + id);
+                        
+                        row.fadeOut(400, function() {
+                            row.remove();
+                        });
+                        detailsRow.fadeOut(400, function() {
+                            detailsRow.remove();
+                        });
+                        
+                        // Başarı mesajı göster
+                        var successMsg = $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                            '<strong>Başarılı!</strong> Cari başarıyla silindi.' +
+                            '<button type="button" class="close" data-dismiss="alert">' +
+                            '<span aria-hidden="true">&times;</span></button></div>');
+                        
+                        $('.container-fluid').prepend(successMsg);
+                        
+                        // 3 saniye sonra mesajı kaldır
+                        setTimeout(function() {
+                            successMsg.fadeOut();
+                        }, 3000);
+                    } else {
+                        alert('Hata: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Silme hatası:', xhr.responseText);
+                    alert('Bir hata oluştu! Detay: ' + xhr.responseText);
+                }
+            });
+        }
+    }
+
+    function createAccountRow(account) {
+        var statusClass = account.Status === 'Aktif' ? 'status-active' : 'status-inactive';
+        var balanceClass = account.Balance >= 0 ? 'text-success' : 'text-danger';
+        
+        return '<tr class="expandable-row" data-id="' + account.Id + '">' +
+            '<td class="align-middle">' + new Date().toLocaleDateString('tr-TR') + '</td>' +
+            '<td class="align-middle">' +
+                '<div>' +
+                    '<a href="#!" class="text-body font-weight-semibold">' + account.Name + '</a>' +
+                    '<div class="text-muted small">Cari No: ' + account.Id + '</div>' +
+                '</div>' +
+            '</td>' +
+            '<td class="align-middle">' + (account.Group || 'Müşteri') + '</td>' +
+            '<td class="align-middle">' + account.Email + '</td>' +
+            '<td class="align-middle">' + account.Phone + '</td>' +
+            '<td class="align-middle">' +
+                '<span class="' + balanceClass + ' font-weight-semibold">' + 
+                    parseFloat(account.Balance).toFixed(2) + ' ₺' +
+                '</span>' +
+            '</td>' +
+            '<td class="align-middle">' +
+                '<span class="status-badge ' + statusClass + '">' + account.Status + '</span>' +
+            '</td>' +
+            '<td class="table-action">' +
+                '<a href="/Accounting/Statement/' + account.Id + '" class="btn btn-icon btn-outline-primary" title="Cari Ekstresi Görüntüle">' +
+                    '<i class="feather icon-file-text"></i>' +
+                '</a>' +
+                '<a href="/Orders/History/' + account.Id + '" class="btn btn-icon btn-outline-info" title="Sipariş Geçmişini Gör">' +
+                    '<i class="feather icon-shopping-cart"></i>' +
+                '</a>' +
+                '<a href="#!" class="btn btn-icon btn-outline-success" title="Carinin Bilgilerini Düzenle" onclick="editAccount(' + account.Id + ')">' +
+                    '<i class="feather icon-edit"></i>' +
+                '</a>' +
+                '<a href="#!" class="btn btn-icon btn-outline-danger" title="Carileri Sil" onclick="deleteAccount(' + account.Id + ')">' +
+                    '<i class="feather icon-trash-2"></i>' +
+                '</a>' +
+            '</td>' +
+        '</tr>';
+    }
+
+    function clearForm() {
+        $('#AccountName').val('');
+        $('#AccountEmail').val('');
+        $('#AccountPhone').val('');
+        $('#AccountAddress').val('');
+        $('#AccountTaxNumber').val('');
+        $('#AccountTaxOffice').val('');
+        $('#AccountBalance').val('');
+        $('#AccountGroup').val('Müşteri');
+        $('.switcher-input').prop('checked', true);
+    }
+    
+    function updateAccount() {
+        var accountData = {
+            Id: parseInt($('#EditAccountId').val()),
+            Name: $('#EditAccountName').val(),
+            Email: $('#EditAccountEmail').val(),
+            Phone: $('#EditAccountPhone').val(),
+            Address: $('#EditAccountAddress').val(),
+            TaxNumber: $('#EditAccountTaxNumber').val(),
+            TaxOffice: $('#EditAccountTaxOffice').val(),
+            Balance: parseFloat($('#EditAccountBalance').val()) || 0,
+            IsActive: $('#EditAccountIsActive').is(':checked')
+        };
+
+        // Validasyon
+        if (!accountData.Name || !accountData.Email) {
+            alert('Cari adı ve e-posta alanları zorunludur!');
+            return;
+        }
+
+        // AJAX ile sunucuya gönder
+        $.ajax({
+            url: '/Accounting/UpdateAccount',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(accountData),
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    $('#modal-edit-account').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                } else {
+                    alert('Hata: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Bir hata oluştu! Detay: ' + xhr.responseText);
+            }
+        });
+    }
+
+    function showStatementModal() {
+        alert('Cari ekstresi görüntülemek için önce bir cari seçin.');
+    }
+</script>
+
+</body>
+</html>

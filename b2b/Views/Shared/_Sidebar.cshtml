@@ -1,5 +1,5 @@
-@* _Sidebar.cshtml *@
-<aside id="layout-menu" class="layout-sidenav sidenav sidenav-vertical bg-white logo-dark">
+<div id="layout-sidenav" class="layout-sidenav sidenav sidenav-vertical bg-white logo-dark">
+    <!-- Brand demo (see ~/css/demo/demo.css) -->
     <div class="app-brand demo">
         <span class="app-brand-logo demo">
             <i class="feather icon-shopping-bag"></i>
@@ -11,9 +11,11 @@
     </div>
     <div class="sidenav-divider mt-0"></div>
 
+    <!-- Links -->
     <ul class="sidenav-inner py-1">
+
         <!-- Dashboard -->
-        <li class="sidenav-item open active">
+        <li class="sidenav-item">
             <a href="/Home/Index" class="sidenav-link">
                 <i class="sidenav-icon feather icon-home"></i>
                 <div>Dashboard</div>
@@ -25,11 +27,11 @@
         {
             <!-- Kampanyalar -->
             <li class="sidenav-item">
-                <a href="javascript:void(0);" class="sidenav-link sidenav-toggle">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
                     <i class="sidenav-icon feather icon-tag"></i>
                     <div>Kampanyalar</div>
                 </a>
-                <ul class="sidenav-inner">
+                <ul class="sidenav-menu">
                     <li class="sidenav-item">
                         <a href="/Campaign/Index" class="sidenav-link">
                             <div>Kampanyalar</div>
@@ -50,26 +52,16 @@
                             <div>Süresi Bitmek Üzere Olanlar</div>
                         </a>
                     </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Stats" class="sidenav-link">
-                            <div>Kampanya İstatistikleri</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Search" class="sidenav-link">
-                            <div>Gelişmiş Arama / Filtre</div>
-                        </a>
-                    </li>
                 </ul>
             </li>
 
             <!-- Teklifler -->
             <li class="sidenav-item">
-                <a href="javascript:void(0);" class="sidenav-link sidenav-toggle">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
                     <i class="sidenav-icon feather icon-file-text"></i>
                     <div>Teklifler</div>
                 </a>
-                <ul class="sidenav-inner">
+                <ul class="sidenav-menu">
                     <li class="sidenav-item">
                         <a href="/Offer/Create" class="sidenav-link">
                             <div>Teklif Oluştur</div>
@@ -101,13 +93,38 @@
         }
         else
         {
+            <!-- Cari Yönetimi-->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-folder"></i>
+                    <div>Cari Yönetim</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="/Accounting/Accounts" class="sidenav-link">
+                            <div>Cari Listesi</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="javascript:void(0)" class="sidenav-link" onclick="showStatementModal()">
+                            <div>Cari Ekstresi</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="/Accounting/OrderHistory" class="sidenav-link">
+                            <div>Sipariş Geçmişi</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
             <!-- Kampanyalar -->
             <li class="sidenav-item">
-                <a href="javascript:void(0);" class="sidenav-link sidenav-toggle">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
                     <i class="sidenav-icon feather icon-tag"></i>
                     <div>Kampanyalar</div>
                 </a>
-                <ul class="sidenav-inner">
+                <ul class="sidenav-menu">
                     <li class="sidenav-item">
                         <a href="/Campaign/MyCampaigns" class="sidenav-link">
                             <div>Kampanyalarım</div>
@@ -143,11 +160,6 @@
                             <div>Kampanya Şablonları</div>
                         </a>
                     </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Search" class="sidenav-link">
-                            <div>Gelişmiş Arama / Filtre</div>
-                        </a>
-                    </li>
                 </ul>
             </li>
 
@@ -178,11 +190,11 @@
 
         <!-- Raporlar -->
         <li class="sidenav-item">
-            <a href="javascript:void(0);" class="sidenav-link sidenav-toggle">
+            <a href="javascript:" class="sidenav-link sidenav-toggle">
                 <i class="sidenav-icon feather icon-bar-chart-2"></i>
                 <div>Raporlar</div>
             </a>
-            <ul class="sidenav-inner">
+            <ul class="sidenav-menu">
                 <li class="sidenav-item">
                     <a href="/Reports/Analytics" class="sidenav-link">
                         <div>Analitik Ekranı</div>
@@ -198,11 +210,11 @@
 
         <!-- Yardım -->
         <li class="sidenav-item">
-            <a href="javascript:void(0);" class="sidenav-link sidenav-toggle">
+            <a href="javascript:" class="sidenav-link sidenav-toggle">
                 <i class="sidenav-icon feather icon-help-circle"></i>
                 <div>Yardım</div>
             </a>
-            <ul class="sidenav-inner">
+            <ul class="sidenav-menu">
                 <li class="sidenav-item">
                     <a href="/Help/FAQ" class="sidenav-link">
                         <div>SSS</div>
@@ -213,28 +225,7 @@
                         <div>Canlı Destek</div>
                     </a>
                 </li>
-                <li class="sidenav-item">
-                    <a href="/Help/Guide" class="sidenav-link">
-                        <div>Kullanım Kılavuzu</div>
-                    </a>
-                </li>
             </ul>
         </li>
-
-        <!-- Mesajlar -->
-        <li class="sidenav-item">
-            <a href="/Message/Index" class="sidenav-link">
-                <i class="sidenav-icon feather icon-message-square"></i>
-                <div>Mesajlar</div>
-            </a>
-        </li>
-
-        <!-- Profilim -->
-        <li class="sidenav-item">
-            <a href="/Account/Profile" class="sidenav-link">
-                <i class="sidenav-icon feather icon-user"></i>
-                <div>Profilim</div>
-            </a>
-        </li>
     </ul>
-</aside>
+</div>

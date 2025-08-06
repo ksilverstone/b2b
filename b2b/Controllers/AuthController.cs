@@ -164,24 +164,14 @@ public class AuthController : Controller
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        // Add default role (Satıcı ve Admin)
-        var sellerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Satıcı");
-        var adminRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Admin");
-        if (sellerRole != null)
+        // Add default role (Alıcı)
+        var buyerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Buyer");
+        if (buyerRole != null)
         {
             var userRole = new UserRole
             {
                 UserId = user.Id,
-                RoleId = sellerRole.Id
-            };
-            await _context.UserRoles.AddAsync(userRole);
-        }
-        if (adminRole != null)
-        {
-            var userRole = new UserRole
-            {
-                UserId = user.Id,
-                RoleId = adminRole.Id
+                RoleId = buyerRole.Id
             };
             await _context.UserRoles.AddAsync(userRole);
         }
@@ -221,5 +211,44 @@ public class AuthController : Controller
         if (!string.IsNullOrEmpty(message))
             ViewBag.Info = message;
         return View();
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
+
+    // Test için Seller rolü ekleme (sadece geliştirme ortamında)
+    [HttpGet]
+    public async Task<IActionResult> MakeSeller(string email)
+    {
+        var user = await _context.Users
+            .Include(u => u.UserRoles)
+            .FirstOrDefaultAsync(u => u.Email == email);
+
+        if (user != null)
+        {
+            var sellerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Seller");
+            if (sellerRole != null)
+            {
+                // Mevcut rolleri temizle
+                var existingRoles = _context.UserRoles.Where(ur => ur.UserId == user.Id);
+                _context.UserRoles.RemoveRange(existingRoles);
+
+                // Seller rolü ekle
+                var userRole = new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = sellerRole.Id
+                };
+                await _context.UserRoles.AddAsync(userRole);
+                await _context.SaveChangesAsync();
+
+                return Content($"Kullanıcı {email} Seller rolüne atandı!");
+            }
+        }
+
+        return Content("Kullanıcı bulunamadı veya Seller rolü bulunamadı!");
     }
 }

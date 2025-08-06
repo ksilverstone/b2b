@@ -6,7 +6,7 @@
 
 // Collapse menu
 (function() {
-    if ($('#layout-menu').hasClass('sidenav-horizontal') || window.layoutHelpers.isSmallScreen()) {
+    if ($('#layout-sidenav').hasClass('sidenav-horizontal') || window.layoutHelpers.isSmallScreen()) {
         return;
     }
 
@@ -20,7 +20,7 @@
 
 $(function() {
     // Initialize sidenav
-    $('#layout-menu').each(function() {
+    $('#layout-sidenav').each(function() {
         new SideNav(this, {
             orientation: $(this).hasClass('sidenav-horizontal') ? 'horizontal' : 'vertical'
         });
@@ -133,20 +133,20 @@ $(function() {
     });
     $('#nav-dark').change(function() {
         if ($(this).is(":checked")) {
-            $('#layout-menu').removeClass('bg-white');
-            $('#layout-menu').addClass('bg-dark');
+            $('#layout-sidenav').removeClass('bg-white');
+            $('#layout-sidenav').addClass('bg-dark');
         } else {
-            $('#layout-menu').addClass('bg-white');
-            $('#layout-menu').removeClass('bg-dark');
+            $('#layout-sidenav').addClass('bg-white');
+            $('#layout-sidenav').removeClass('bg-dark');
         }
     });
     $('#brand-dark').change(function() {
         if ($(this).is(":checked")) {
-            $('#layout-menu').removeClass('logo-white');
-            $('#layout-menu').addClass('logo-dark');
+            $('#layout-sidenav').removeClass('logo-white');
+            $('#layout-sidenav').addClass('logo-dark');
         } else {
-            $('#layout-menu').addClass('logo-white');
-            $('#layout-menu').removeClass('logo-dark');
+            $('#layout-sidenav').addClass('logo-white');
+            $('#layout-sidenav').removeClass('logo-dark');
         }
     });
     $('#head-dark').change(function() {

@@ -1,0 +1,446 @@
+@model b2b.Controllers.StatementViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en" class="default-style layout-fixed layout-navbar-fixed">
+
+<head>
+    <title>B2B Portal | Cari Ekstresi</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="B2B Portal - İşletmeler arası ticaret platformu">
+    <meta name="keywords" content="b2b, ticaret, işletme, portal">
+    <meta name="author" content="B2B Portal">
+    <link rel="icon" type="image/x-icon" href="~/img/favicon.ico">
+
+    <!-- Google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+
+    <!-- Icon fonts -->
+    <link rel="stylesheet" href="~/fonts/fontawesome.css">
+    <link rel="stylesheet" href="~/fonts/ionicons.css">
+    <link rel="stylesheet" href="~/fonts/linearicons.css">
+    <link rel="stylesheet" href="~/fonts/open-iconic.css">
+    <link rel="stylesheet" href="~/fonts/pe-icon-7-stroke.css">
+    <link rel="stylesheet" href="~/fonts/feather.css">
+
+    <!-- Core stylesheets -->
+    <link rel="stylesheet" href="~/css/bootstrap-material.css">
+    <link rel="stylesheet" href="~/css/shreerang-material.css">
+    <link rel="stylesheet" href="~/css/uikit.css">
+
+
+
+
+
+</head>
+
+<body>
+    <!-- [ Preloader ] Start -->
+    <div class="page-loader">
+        <div class="bg-primary"></div>
+    </div>
+    <!-- [ Preloader ] End -->
+    <!-- [ Layout wrapper ] Start -->
+    <div class="layout-wrapper layout-2">
+        <div class="layout-inner">
+            <!-- [ Layout sidenav ] Start -->
+            @await Html.PartialAsync("_Sidebar")
+            <!-- [ Layout sidenav ] End -->
+            <!-- [ Layout container ] Start -->
+            <div class="layout-container">
+                <!-- [ Layout navbar ( Header ) ] Start -->
+                <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-dark container-p-x" id="layout-navbar">
+
+                    <!-- Brand demo (see ~/css/demo/demo.css) -->
+                    <a href="/Home/Index" class="navbar-brand app-brand demo d-lg-none py-0 mr-4">
+                        <span class="app-brand-logo demo">
+                            <i class="feather icon-shopping-bag"></i>
+                        </span>
+                        <span class="app-brand-text demo font-weight-normal ml-2">B2B Portal</span>
+                    </a>
+
+                    <!-- Sidenav toggle (see ~/css/demo/demo.css) -->
+                    <div class="layout-sidenav-toggle navbar-nav d-lg-none align-items-lg-center mr-auto">
+                        <a class="nav-item nav-link px-0 mr-lg-4" href="javascript:">
+                            <i class="ion ion-md-menu text-large align-middle"></i>
+                        </a>
+                    </div>
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="navbar-collapse collapse" id="layout-navbar-collapse">
+                        <!-- Divider -->
+                        <hr class="d-lg-none w-100 my-2">
+
+                        <div class="navbar-nav align-items-lg-center">
+                            <!-- Search -->
+                            <label class="nav-item navbar-text navbar-search-box p-0 active">
+                                <i class="feather icon-search navbar-icon align-middle"></i>
+                                <span class="navbar-search-input pl-2">
+                                    <input type="text" class="form-control navbar-text mx-2" placeholder="Ara...">
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="navbar-nav align-items-lg-center ml-auto">
+                            <div class="demo-navbar-notifications nav-item dropdown mr-lg-3">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="#" data-toggle="dropdown">
+                                    <i class="feather icon-bell navbar-icon align-middle"></i>
+                                    <span class="badge badge-danger badge-dot indicator"></span>
+                                    <span class="d-lg-none align-middle">&nbsp; Bildirimler</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <div class="bg-primary text-center text-white font-weight-bold p-3">
+                                        5 Yeni Bildirim
+                                    </div>
+                                    <div class="list-group list-group-flush">
+                                        <a href="javascript:" class="list-group-item list-group-item-action media d-flex">
+                                            <div class="ui-icon ui-icon-sm feather icon-home bg-primary border-0 text-white rounded-circle mr-3"></div>
+                                            <div class="media-body text-muted">
+                                                <div class="text-semibold">Yeni sipariş alındı</div>
+                                                <small class="text-muted">2 dakika önce</small>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="demo-navbar-user nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                                    <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                                        <img src="~/img/avatars/1.png" alt="" class="d-block ui-w-30 rounded-circle">
+                                        <span class="px-1 mr-lg-2 ml-2 ml-lg-0">@User.Identity?.Name</span>
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-user text-muted"></i> &nbsp; Profil
+                                    </a>
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-settings text-muted"></i> &nbsp; Ayarlar
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="/Auth/Logout" class="dropdown-item">
+                                        <i class="feather icon-log-out text-muted"></i> &nbsp; Çıkış
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <!-- [ Layout navbar ( Header ) ] End -->
+
+                <!-- [ Layout content ] Start -->
+                <div class="layout-content">
+                    <div class="container-fluid flex-grow-1 container-p-y">
+                        <h4 class="font-weight-bold py-3 mb-0">Cari Ekstresi</h4>
+                        <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#!">Cari Yönetimi</a></li>
+                                <li class="breadcrumb-item"><a href="/Accounting/Accounts">Cari Listesi</a></li>
+                                <li class="breadcrumb-item active"><a href="#!">Cari Ekstresi</a></li>
+                            </ol>
+                        </div>
+
+                        <!-- Cari Bilgileri -->
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Cari Bilgileri</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Cari Adı</label>
+                                                    <input type="text" class="form-control" value="@Model.Account.Name" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">E-posta</label>
+                                                    <input type="email" class="form-control" value="@Model.Account.Email" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Telefon</label>
+                                                    <input type="text" class="form-control" value="@Model.Account.Phone" readonly>
+                                                </div>
+                                            </div>
+                                                                                          <div class="col-md-6">
+                                                  <div class="form-group">
+                                                      <label class="form-label">Cari Grubu</label>
+                                                      <input type="text" class="form-control" value="@Model.Account.Group" readonly>
+                                                  </div>
+                                              </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- İşlem Geçmişi -->
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">İşlem Geçmişi</h5>
+                                        <div class="card-actions">
+                                            <button class="btn btn-primary btn-sm" onclick="printStatement()">
+                                                <i class="feather icon-printer"></i> Yazdır
+                                            </button>
+                                            <button class="btn btn-success btn-sm" onclick="exportPDF()">
+                                                <i class="feather icon-download"></i> PDF
+                                            </button>
+                                            <button class="btn btn-info btn-sm" onclick="newCollection()">
+                                                <i class="feather icon-plus"></i> Yeni Tahsilat
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="transactions-table" class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tarih</th>
+                                                        <th>Belge No</th>
+                                                        <th>Açıklama</th>
+                                                        <th class="text-right">Borç (₺)</th>
+                                                        <th class="text-right">Alacak (₺)</th>
+                                                        <th class="text-right">Bakiye (₺)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var transaction in Model.Transactions.OrderByDescending(t => t.Date))
+                                                    {
+                                                        <tr>
+                                                            <td>@transaction.Date.ToString("dd.MM.yyyy")</td>
+                                                            <td>@transaction.DocumentNo</td>
+                                                            <td>@transaction.Description</td>
+                                                            <td class="text-right">
+                                                                @if (transaction.Debit > 0)
+                                                                {
+                                                                    <span class="text-success">@transaction.Debit.ToString("N2")</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>-</span>
+                                                                }
+                                                            </td>
+                                                            <td class="text-right">
+                                                                @if (transaction.Credit > 0)
+                                                                {
+                                                                    <span class="text-danger">@transaction.Credit.ToString("N2")</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>-</span>
+                                                                }
+                                                            </td>
+                                                            <td class="text-right font-weight-bold">
+                                                                <span class="@(transaction.Balance >= 0 ? "text-success" : "text-danger")">
+                                                                    @transaction.Balance.ToString("N2")
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- [ Layout content ] End -->
+            </div>
+            <!-- [ Layout container ] End -->
+        </div>
+        <!-- [ Layout inner ] End -->
+    </div>
+    <!-- [ Layout wrapper ] End -->
+
+    <!-- İşlem Ekleme Modal -->
+    <div class="modal fade" id="modal-add-transaction" tabindex="-1" role="dialog" aria-labelledby="modal-add-transaction-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni İşlem Ekle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTransactionForm">
+                        <input type="hidden" id="TransactionCustomerId" value="@Model.Account.Id">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="floating-label" for="TransactionDocumentNo">Belge No</label>
+                                    <input type="text" class="form-control" id="TransactionDocumentNo" placeholder="Belge numarasını giriniz" required>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="floating-label" for="TransactionType">İşlem Türü</label>
+                                    <select class="form-control" id="TransactionType" required>
+                                        <option value="">Seçiniz</option>
+                                        <option value="Debit">Borç (Tahsilat)</option>
+                                        <option value="Credit">Alacak (Ödeme)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="floating-label" for="TransactionDescription">Açıklama</label>
+                                    <textarea class="form-control" id="TransactionDescription" rows="3" placeholder="İşlem açıklamasını giriniz" required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="floating-label" for="TransactionAmount">Tutar</label>
+                                    <input type="number" step="0.01" class="form-control" id="TransactionAmount" placeholder="0.00" required>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <button type="submit" class="btn btn-primary">Kaydet</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery - CDN'den yükle -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="~/js/bootstrap.js"></script>
+    
+    <!-- Core scripts -->
+    <script src="~/js/pace.js"></script>
+    <script src="~/lib/popper/popper.js"></script>
+    <script src="~/js/sidenav.js"></script>
+    <script src="~/js/layout-helpers.js"></script>
+    <script src="~/js/material-ripple.js"></script>
+
+    <!-- Demo -->
+    <script src="~/js/demo.js"></script>
+
+    <script>
+        $(function () {
+            // Basit tablo - DataTables olmadan
+            console.log('Cari ekstresi sayfası yüklendi');
+        });
+
+        function printStatement() {
+            window.print();
+        }
+
+        function exportPDF() {
+            alert('PDF export özelliği yakında eklenecek!');
+        }
+
+        function newCollection() {
+            $('#modal-add-transaction').modal('show');
+        }
+        
+        // İşlem ekleme formu submit
+        $('#addTransactionForm').on('submit', function(e) {
+            e.preventDefault();
+            addTransaction();
+        });
+        
+        function addTransaction() {
+            var transactionData = {
+                CustomerId: parseInt($('#TransactionCustomerId').val()),
+                DocumentNo: $('#TransactionDocumentNo').val(),
+                Description: $('#TransactionDescription').val(),
+                Amount: parseFloat($('#TransactionAmount').val()) || 0,
+                TransactionType: $('#TransactionType').val()
+            };
+
+            // Validasyon
+            if (!transactionData.DocumentNo || !transactionData.Description || !transactionData.Amount || !transactionData.TransactionType) {
+                alert('Tüm alanları doldurunuz!');
+                return;
+            }
+
+            // AJAX ile sunucuya gönder
+            $.ajax({
+                url: '/Accounting/AddTransaction',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(transactionData),
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        $('#modal-add-transaction').modal('hide');
+                        // Bakiye güncelleme - işlem geçmişi tablosundaki son satırın bakiye sütununu güncelle
+                        var lastBalanceCell = $('#transactions-table tbody tr:first td:last span');
+                        var currentBalance = parseFloat(lastBalanceCell.text().replace(/[^\d.-]/g, '')) || 0;
+                        var newBalance = currentBalance;
+                        
+                        if (transactionData.TransactionType === 'Debit') {
+                            newBalance += transactionData.Amount;
+                        } else {
+                            newBalance -= transactionData.Amount;
+                        }
+                        
+                        // Yeni işlem satırını tabloya ekle
+                        var newRow = '<tr>' +
+                            '<td>' + new Date().toLocaleDateString('tr-TR') + '</td>' +
+                            '<td>' + transactionData.DocumentNo + '</td>' +
+                            '<td>' + transactionData.Description + '</td>' +
+                            '<td class="text-right">' + (transactionData.TransactionType === 'Debit' ? '<span class="text-success">' + transactionData.Amount.toFixed(2) + '</span>' : '<span>-</span>') + '</td>' +
+                            '<td class="text-right">' + (transactionData.TransactionType === 'Credit' ? '<span class="text-danger">' + transactionData.Amount.toFixed(2) + '</span>' : '<span>-</span>') + '</td>' +
+                            '<td class="text-right font-weight-bold"><span class="' + (newBalance >= 0 ? 'text-success' : 'text-danger') + '">' + newBalance.toFixed(2) + '</span></td>' +
+                            '</tr>';
+                        
+                        $('#transactions-table tbody').prepend(newRow);
+                        
+                        // Formu temizle
+                        $('#TransactionDocumentNo').val('');
+                        $('#TransactionDescription').val('');
+                        $('#TransactionAmount').val('');
+                        $('#TransactionType').val('Debit');
+                        
+                        // Başarı mesajı göster
+                        var successMsg = $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                            '<strong>Başarılı!</strong> İşlem başarıyla eklendi.' +
+                            '<button type="button" class="close" data-dismiss="alert">' +
+                            '<span aria-hidden="true">&times;</span></button></div>');
+                        
+                        $('.container-fluid').prepend(successMsg);
+                        
+                        // 3 saniye sonra mesajı kaldır
+                        setTimeout(function() {
+                            successMsg.fadeOut();
+                        }, 3000);
+                    } else {
+                        alert('Hata: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Bir hata oluştu! Detay: ' + xhr.responseText);
+                }
+            });
+        }
+    </script>
+
+</body>
+</html> 

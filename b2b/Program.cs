@@ -35,6 +35,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication(); // Bu satırı ekledim
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -1,0 +1,509 @@
+@model List<b2b.Controllers.OrderHistoryViewModel>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="tr" class="default-style layout-fixed layout-navbar-fixed">
+
+<head>
+    <title>B2B Portal | Sipariş Geçmişi</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="B2B Portal - İşletmeler arası ticaret platformu">
+    <meta name="keywords" content="b2b, ticaret, işletme, portal">
+    <meta name="author" content="B2B Portal">
+    <link rel="icon" type="image/x-icon" href="~/img/favicon.ico">
+
+    <!-- Google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+
+    <!-- Icon fonts -->
+    <link rel="stylesheet" href="~/fonts/fontawesome.css">
+    <link rel="stylesheet" href="~/fonts/ionicons.css">
+    <link rel="stylesheet" href="~/fonts/linearicons.css">
+    <link rel="stylesheet" href="~/fonts/open-iconic.css">
+    <link rel="stylesheet" href="~/fonts/pe-icon-7-stroke.css">
+    <link rel="stylesheet" href="~/fonts/feather.css">
+
+    <!-- Core stylesheets -->
+    <link rel="stylesheet" href="~/css/bootstrap-material.css">
+    <link rel="stylesheet" href="~/css/shreerang-material.css">
+    <link rel="stylesheet" href="~/css/uikit.css">
+
+    <!-- Libs -->
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="~/lib/flot/flot.css">
+
+    <style>
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .table-action .btn {
+            margin: 0 2px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .table-action .btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .filter-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-card .card-body {
+            padding: 1.25rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #5a5c69;
+            margin-bottom: 0.5rem;
+        }
+        
+        .custom-select {
+            border-radius: 0.375rem;
+            border: 1px solid #d1d3e2;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .custom-select:focus {
+            border-color: #bac8f3;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .form-control {
+            border-radius: 0.375rem;
+            border: 1px solid #d1d3e2;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .form-control:focus {
+            border-color: #bac8f3;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- [ Preloader ] Start -->
+    <div class="page-loader">
+        <div class="bg-primary"></div>
+    </div>
+    <!-- [ Preloader ] End -->
+    
+    <!-- [ Layout wrapper ] Start -->
+    <div class="layout-wrapper layout-2">
+        <div class="layout-inner">
+            <!-- [ Layout sidenav ] Start -->
+            @await Html.PartialAsync("_Sidebar")
+            <!-- [ Layout sidenav ] End -->
+            
+            <!-- [ Layout container ] Start -->
+            <div class="layout-container">
+                <!-- [ Layout navbar ( Header ) ] Start -->
+                <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-dark container-p-x" id="layout-navbar">
+
+                    <!-- Brand demo (see ~/css/demo/demo.css) -->
+                    <a href="/Home/Index" class="navbar-brand app-brand demo d-lg-none py-0 mr-4">
+                        <span class="app-brand-logo demo">
+                            <i class="feather icon-shopping-bag"></i>
+                        </span>
+                        <span class="app-brand-text demo font-weight-normal ml-2">B2B Portal</span>
+                    </a>
+
+                    <!-- Sidenav toggle (see ~/css/demo/demo.css) -->
+                    <div class="layout-sidenav-toggle navbar-nav d-lg-none align-items-lg-center mr-auto">
+                        <a class="nav-item nav-link px-0 mr-lg-4" href="javascript:">
+                            <i class="ion ion-md-menu text-large align-middle"></i>
+                        </a>
+                    </div>
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="navbar-collapse collapse" id="layout-navbar-collapse">
+                        <!-- Divider -->
+                        <hr class="d-lg-none w-100 my-2">
+
+                        <div class="navbar-nav align-items-lg-center">
+                            <!-- Search -->
+                            <label class="nav-item navbar-text navbar-search-box p-0 active">
+                                <i class="feather icon-search navbar-icon align-middle"></i>
+                                <span class="navbar-search-input pl-2">
+                                    <input type="text" class="form-control navbar-text mx-2" placeholder="Ara...">
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="navbar-nav align-items-lg-center ml-auto">
+                            <div class="demo-navbar-notifications nav-item dropdown mr-lg-3">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="#" data-toggle="dropdown">
+                                    <i class="feather icon-bell navbar-icon align-middle"></i>
+                                    <span class="badge badge-danger badge-dot indicator"></span>
+                                    <span class="d-lg-none align-middle">&nbsp; Bildirimler</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <div class="bg-primary text-center text-white font-weight-bold p-3">
+                                        5 Yeni Bildirim
+                                    </div>
+                                    <div class="list-group list-group-flush">
+                                        <a href="javascript:" class="list-group-item list-group-item-action media d-flex">
+                                            <div class="ui-icon ui-icon-sm feather icon-home bg-primary border-0 text-white rounded-circle mr-3"></div>
+                                            <div class="media-body text-muted">
+                                                <div class="text-semibold">Yeni sipariş alındı</div>
+                                                <small class="text-muted">2 dakika önce</small>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="demo-navbar-user nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                                    <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                                        <img src="~/img/avatars/1.png" alt="" class="d-block ui-w-30 rounded-circle">
+                                        <span class="px-1 mr-lg-2 ml-2 ml-lg-0">@User.Identity?.Name</span>
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-user text-muted"></i> &nbsp; Profil
+                                    </a>
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-settings text-muted"></i> &nbsp; Ayarlar
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="/Auth/Logout" class="dropdown-item">
+                                        <i class="feather icon-log-out text-muted"></i> &nbsp; Çıkış
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <!-- [ Layout navbar ( Header ) ] End -->
+
+                <!-- [ Layout content ] Start -->
+                <div class="layout-content">
+                    <div class="container-fluid flex-grow-1 container-p-y">
+                        <!-- Başlık -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="font-weight-bold py-3 mb-0">
+                                    @if (ViewBag.CustomerName != null)
+                                    {
+                                        <span>@ViewBag.CustomerName - Sipariş Geçmişi</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Tüm Siparişler</span>
+                                    }
+                                </h4>
+                            </div>
+                            <div>
+                                <a href="/Accounting/Accounts" class="btn btn-secondary">
+                                    <i class="feather icon-arrow-left mr-2"></i> Geri Dön
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#!">Cari Yönetimi</a></li>
+                                <li class="breadcrumb-item active"><a href="#!">Sipariş Geçmişi</a></li>
+                            </ol>
+                        </div>
+
+                        <!-- Filtreler -->
+                        <div class="card filter-card">
+                            <div class="card-body">
+                                <div class="form-row align-items-center">
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Durum</label>
+                                        <select class="custom-select" id="statusFilter">
+                                            <option value="">Tümü</option>
+                                            <option value="Beklemede">Beklemede</option>
+                                            <option value="Onaylandı">Onaylandı</option>
+                                            <option value="Tamamlandı">Tamamlandı</option>
+                                            <option value="İptal">İptal</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Arama</label>
+                                        <input type="text" class="form-control" id="searchFilter" placeholder="Sipariş no veya müşteri adı ile ara...">
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Başlangıç Tarihi</label>
+                                        <input type="date" class="form-control" id="startDateFilter">
+                                    </div>
+                                    <div class="col-md my-2">
+                                        <label class="form-label">Bitiş Tarihi</label>
+                                        <input type="date" class="form-control" id="endDateFilter">
+                                    </div>
+                                    <div class="col-md col-xl-2 my-2">
+                                        <label class="form-label d-none d-md-block">&nbsp;</label>
+                                        <div class="btn-group btn-block" role="group">
+                                            <button type="button" class="btn btn-primary" id="applyFilters">
+                                                <i class="feather icon-filter mr-1"></i> Filtrele
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="clearFilters">
+                                                <i class="feather icon-refresh-cw mr-1"></i> Temizle
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Sipariş Listesi -->
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="orders-table" class="table mb-0">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Sipariş No</th>
+                                                        <th>Müşteri</th>
+                                                        <th>Tarih</th>
+                                                        <th>Tutar (₺)</th>
+                                                        <th>Durum</th>
+                                                        <th>Açıklama</th>
+                                                        <th>İşlemler</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (Model != null && Model.Any())
+                                                    {
+                                                        @foreach (var order in Model)
+                                                        {
+                                                            <tr>
+                                                                <td class="align-middle">
+                                                                    <div>
+                                                                        <a href="#!" class="text-body font-weight-semibold">@order.OrderNumber</a>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="align-middle">
+                                                                    @if (ViewBag.CustomerName == null)
+                                                                    {
+                                                                        <a href="/Accounting/CustomerOrderHistory/@order.CustomerId" class="text-body">
+                                                                            @order.CustomerName
+                                                                        </a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @order.CustomerName
+                                                                    }
+                                                                </td>
+                                                                <td class="align-middle">
+                                                                    @order.OrderDate.ToString("dd.MM.yyyy")
+                                                                </td>
+                                                                <td class="align-middle">
+                                                                    <span class="font-weight-semibold">
+                                                                        @order.TotalAmount.ToString("N2") ₺
+                                                                    </span>
+                                                                </td>
+                                                                <td class="align-middle">
+                                                                    @{
+                                                                        var statusClass = order.Status switch
+                                                                        {
+                                                                            "Beklemede" => "status-pending",
+                                                                            "Onaylandı" => "status-approved",
+                                                                            "Tamamlandı" => "status-completed",
+                                                                            "İptal" => "status-cancelled",
+                                                                            _ => "status-pending"
+                                                                        };
+                                                                    }
+                                                                    <span class="status-badge @statusClass">@order.Status</span>
+                                                                </td>
+                                                                <td class="align-middle">
+                                                                    <span class="text-muted">@(string.IsNullOrEmpty(order.Description) ? "-" : order.Description)</span>
+                                                                </td>
+                                                                <td class="table-action">
+                                                                    <a href="#!" class="btn btn-icon btn-outline-primary" title="Sipariş Detayı">
+                                                                        <i class="feather icon-eye"></i>
+                                                                    </a>
+                                                                    <a href="#!" class="btn btn-icon btn-outline-success" title="Siparişi Düzenle">
+                                                                        <i class="feather icon-edit"></i>
+                                                                    </a>
+                                                                    <a href="#!" class="btn btn-icon btn-outline-danger" title="Siparişi İptal Et">
+                                                                        <i class="feather icon-x-circle"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td colspan="7" class="text-center py-4">
+                                                                <div class="text-muted">
+                                                                    <i class="feather icon-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+                                                                    <p class="mt-2">Henüz sipariş bulunmuyor.</p>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+    </div>
+    <!-- [ Layout content ] End -->
+</div>
+<!-- [ Layout container ] End -->
+</div>
+<!-- [ Layout inner ] End -->
+</div>
+<!-- [ Layout wrapper ] End -->
+
+    <!-- jQuery - CDN'den yükle -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="~/js/bootstrap.js"></script>
+    
+    <!-- Core scripts -->
+    <script src="~/js/pace.js"></script>
+    <script src="~/lib/popper/popper.js"></script>
+    <script src="~/js/sidenav.js"></script>
+    <script src="~/js/layout-helpers.js"></script>
+    <script src="~/js/material-ripple.js"></script>
+
+    <!-- Demo -->
+    <script src="~/js/demo.js"></script>
+
+<script>
+    $(document).ready(function() {
+        console.log('Sipariş geçmişi sayfası yüklendi');
+        
+        // Sidebar'ı yeniden başlat
+        if (typeof sidenav !== 'undefined') {
+            sidenav.init();
+        }
+        
+        // Sidebar toggle işlevini manuel olarak ekle
+        $('.sidenav-toggle').on('click', function(e) {
+            e.preventDefault();
+            var $parent = $(this).closest('.sidenav-item');
+            var $submenu = $parent.find('.sidenav-menu');
+            
+            // Diğer açık menüleri kapat
+            $('.sidenav-menu').not($submenu).slideUp();
+            $('.sidenav-item').not($parent).removeClass('open');
+            
+            // Bu menüyü aç/kapat
+            $parent.toggleClass('open');
+            $submenu.slideToggle();
+        });
+
+        // Filtreleme fonksiyonu
+        $('#applyFilters').on('click', function() {
+            var statusFilter = $('#statusFilter').val();
+            var searchFilter = $('#searchFilter').val();
+            var startDateFilter = $('#startDateFilter').val();
+            var endDateFilter = $('#endDateFilter').val();
+            
+            // Tüm satırları gizle
+            $('#orders-table tbody tr').hide();
+            
+            // Filtreleme
+            $('#orders-table tbody tr').each(function() {
+                var row = $(this);
+                var orderNumber = row.find('td:eq(0)').text().trim();
+                var customerName = row.find('td:eq(1)').text().trim();
+                var dateText = row.find('td:eq(2)').text().trim();
+                var status = row.find('td:eq(4)').text().trim();
+                var date = new Date(dateText.split('.').reverse().join('-'));
+                
+                var showRow = true;
+                
+                // Arama filtresi
+                if (searchFilter) {
+                    var searchLower = searchFilter.toLowerCase();
+                    if (!orderNumber.toLowerCase().includes(searchLower) && !customerName.toLowerCase().includes(searchLower)) {
+                        showRow = false;
+                    }
+                }
+                
+                // Durum filtresi
+                if (statusFilter && status !== statusFilter) {
+                    showRow = false;
+                }
+                
+                // Tarih filtresi
+                if (startDateFilter && date < new Date(startDateFilter)) {
+                    showRow = false;
+                }
+                if (endDateFilter && date > new Date(endDateFilter)) {
+                    showRow = false;
+                }
+                
+                if (showRow) {
+                    row.show();
+                }
+            });
+        });
+        
+        // Filtreleri temizle
+        $('#clearFilters').on('click', function() {
+            $('#statusFilter').val('');
+            $('#searchFilter').val('');
+            $('#startDateFilter').val('');
+            $('#endDateFilter').val('');
+            $('#orders-table tbody tr').show();
+        });
+    });
+</script>
+
+</body>
+</html> 
