@@ -18,14 +18,14 @@ public class AuthController : Controller
         _context = context;
     }
 
-    // Login GET
+            // Giriş sayfası
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
 
-    // Login POST
+            // Giriş işlemi
     [HttpPost]
     public async Task<IActionResult> Login(string email, string password, bool rememberMe)
     {
@@ -68,7 +68,7 @@ public class AuthController : Controller
             return View();
         }
 
-        // Claims
+        // Kullanıcı bilgileri
         var claims = new List<Claim>
 {
     new Claim(ClaimTypes.Name, user.Email),
@@ -104,14 +104,14 @@ public class AuthController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    // Register GET
+            // Kayıt sayfası
     [HttpGet]
     public IActionResult Register()
     {
         return View();
     }
 
-    // Register POST
+            // Kayıt işlemi
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
@@ -120,14 +120,14 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // Check if email already exists
+        // Email zaten var mı kontrol et
         if (await _context.Users.AnyAsync(u => u.Email == model.Email))
         {
             ModelState.AddModelError("", "Bu email adresi zaten kullanılıyor.");
             return View(model);
         }
 
-        // Check if company name already exists
+        // Şirket adı zaten var mı kontrol et
         if (await _context.Companies.AnyAsync(c => c.Name == model.CompanyName))
         {
             ModelState.AddModelError("", "Bu şirket adı zaten kullanılıyor.");
@@ -138,7 +138,7 @@ public class AuthController : Controller
         var tempUser = new User { Email = model.Email };
         var passwordHash = hasher.HashPassword(tempUser, model.Password);
 
-        // Create company first
+        // Önce şirketi oluştur
         var company = new Company
         {
             Name = model.CompanyName,
@@ -151,7 +151,7 @@ public class AuthController : Controller
         await _context.Companies.AddAsync(company);
         await _context.SaveChangesAsync();
 
-        // Create user with company
+        // Şirket ile kullanıcı oluştur
         var user = new User
         {
             Email = model.Email,
@@ -164,7 +164,7 @@ public class AuthController : Controller
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        // Add default role (Alıcı)
+        // Varsayılan rol ekle (Alıcı)
         var buyerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Buyer");
         if (buyerRole != null)
         {
@@ -180,14 +180,14 @@ public class AuthController : Controller
         return RedirectToAction("Login");
     }
 
-    // ForgotPassword GET
+            // Şifre unutma sayfası
     [HttpGet]
     public IActionResult ForgotPassword()
     {
         return View();
     }
 
-    // ForgotPassword POST
+            // Şifre unutma işlemi
     [HttpPost]
     public IActionResult ForgotPassword(string email)
     {
@@ -204,7 +204,7 @@ public class AuthController : Controller
         }
     }
 
-    // LockScreen GET
+            // Ekran kilidi sayfası
     [HttpGet]
     public IActionResult LockScreen(string? message)
     {

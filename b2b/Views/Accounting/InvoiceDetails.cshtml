@@ -1,0 +1,173 @@
+@model b2b.Models.Invoice
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Fatura Detayları";
+}
+
+<div class="container-fluid">
+    <!-- Başlık -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="font-weight-bold py-3 mb-0">Fatura Detayları - @Model.InvoiceNumber</h4>
+        </div>
+        <div>
+            <a href="/Accounting/OrderHistory" class="btn btn-secondary">
+                <i class="feather icon-arrow-left mr-2"></i> Geri Dön
+            </a>
+            <button type="button" class="btn btn-primary ml-2" onclick="printInvoice()">
+                <i class="feather icon-printer mr-2"></i> Yazdır
+            </button>
+        </div>
+    </div>
+    
+    <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#!">Cari Yönetimi</a></li>
+            <li class="breadcrumb-item"><a href="/Accounting/OrderHistory">Sipariş Geçmişi</a></li>
+            <li class="breadcrumb-item active">Fatura Detayları</li>
+        </ol>
+    </div>
+
+    <div class="row">
+        <!-- Fatura Bilgileri -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Fatura Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Fatura No:</strong></td>
+                            <td>@Model.InvoiceNumber</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fatura Tarihi:</strong></td>
+                            <td>@Model.InvoiceDate.ToString("dd.MM.yyyy")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vade Tarihi:</strong></td>
+                            <td>@Model.DueDate.ToString("dd.MM.yyyy")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Toplam Tutar:</strong></td>
+                            <td><span class="font-weight-semibold">@Model.TotalAmount.ToString("N2") ₺</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Durum:</strong></td>
+                            <td>
+                                @{
+                                    var statusClass = Model.Status switch
+                                    {
+                                        "Beklemede" => "badge badge-warning",
+                                        "Ödendi" => "badge badge-success",
+                                        "Vadesi Geçti" => "badge badge-danger",
+                                        _ => "badge badge-secondary"
+                                    };
+                                }
+                                <span class="@statusClass">@Model.Status</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Müşteri Bilgileri -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Müşteri Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Ad Soyad:</strong></td>
+                            <td>@Model.Customer?.Name</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E-posta:</strong></td>
+                            <td>@Model.Customer?.Email</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Telefon:</strong></td>
+                            <td>@Model.Customer?.Phone</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adres:</strong></td>
+                            <td>@Model.Customer?.Address</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vergi No:</strong></td>
+                            <td>@Model.Customer?.TaxNumber</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vergi Dairesi:</strong></td>
+                            <td>@Model.Customer?.TaxOffice</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fatura Detayları -->
+    @if (Model.Order?.Items != null && Model.Order.Items.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Fatura Detayları</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Ürün</th>
+                                        <th>Miktar</th>
+                                        <th>Birim Fiyat</th>
+                                        <th>Toplam</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Order.Items)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <strong>@item.Product?.Name</strong>
+                                                    @if (!string.IsNullOrEmpty(item.Product?.Description))
+                                                    {
+                                                        <br><small class="text-muted">@item.Product.Description</small>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.UnitPrice.ToString("N2") ₺</td>
+                                            <td><strong>@item.TotalPrice.ToString("N2") ₺</strong></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-active">
+                                        <td colspan="3" class="text-right"><strong>Genel Toplam:</strong></td>
+                                        <td><strong>@Model.TotalAmount.ToString("N2") ₺</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+function printInvoice() {
+    window.print();
+}
+</script>

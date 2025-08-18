@@ -1,0 +1,251 @@
+@model b2b.Models.ProductViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Name + " - Ürün Detayı";
+    ViewBag.ActivePage = "Products";
+}
+
+<div class="container-fluid flex-grow-1 container-p-y">
+    <form id="afForm">@Html.AntiForgeryToken()</form>
+    <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Catalog","Products")">Katalog</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="text-center">
+                        <div id="mainImage" class="position-relative" style="height:420px;background:#f8f9fa; overflow:hidden;">
+                            <button class="btn btn-light position-absolute" style="top:50%;left:8px;transform:translateY(-50%); z-index:2;" onclick="prevImage();return false;">‹</button>
+                            <button class="btn btn-light position-absolute" style="top:50%;right:8px;transform:translateY(-50%); z-index:2;" onclick="nextImage();return false;">›</button>
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img id="mainImageTag" src="@Model.ImageUrl" alt="@Model.Name" class="w-100 h-100" style="object-fit:contain;">
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center w-100 h-100"><i class="feather icon-image text-muted" style="font-size:4rem;"></i></div>
+                            }
+                            <div id="dots" class="position-absolute w-100 text-center" style="bottom:8px; left:0; z-index:2;"></div>
+                        </div>
+                        <div id="thumbs" class="d-flex justify-content-center mt-3 flex-wrap">
+                            @if (Model.Gallery != null && Model.Gallery.Any())
+                            {
+                                foreach (var g in Model.Gallery)
+                                {
+                                    <div class="mx-1 my-1">
+                                        <a href="@g" class="thumb border rounded d-flex align-items-center justify-content-center" style="width:72px;height:72px;background:#fff;" onclick="event.preventDefault(); setImage('@g');">
+                                            <img src="@g" class="w-100 h-100" style="object-fit:cover;" alt="@Model.Name">
+                                        </a>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="mx-1 my-1">
+                                    <a href="javascript:void(0)" class="thumb border rounded d-flex align-items-center justify-content-center" style="width:72px;height:72px;background:#fff;">
+                                        <i class="feather icon-image text-muted"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="mb-1">@Model.Name</h3>
+                    <div class="text-muted mb-3">
+                        @if (!string.IsNullOrEmpty(Model.Category)) { <span><i class="feather icon-tag mr-1"></i>@Model.Category</span> }
+                        @if (!string.IsNullOrEmpty(Model.Brand)) { <span class="ml-3"><i class="feather icon-award mr-1"></i>@Model.Brand</span> }
+                        <span class="ml-3"><i class="feather icon-package mr-1"></i>@Model.SKU</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="h4 text-primary mb-0">@Model.Price.ToString("C")</div>
+                        <div class="ml-3 text-muted">Stok: @Model.Stock @Model.Unit</div>
+                        @if (Model.IsLowStock) { <span class="badge badge-warning ml-2">Kritik Stok</span> }
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Miktar</label>
+                        <div class="d-inline-flex align-items-center qty-pill px-2 py-1">
+                            <button class="btn btn-light" type="button" id="qtyMinus">-</button>
+                            <input type="number" id="qtyInput" class="form-control" min="1" value="1">
+                            <button class="btn btn-light" type="button" id="qtyPlus">+</button>
+                        </div>
+                    </div>
+
+                    @{
+                        var tiers = ViewBag.PriceTiers as IEnumerable<b2b.Models.ProductPriceTier>;
+                    }
+                    @if (tiers != null && tiers.Any())
+                    {
+                        <div class="mb-3">
+                            <div class="text-muted small mb-1">Kademeli Fiyat</div>
+                            <div class="d-flex flex-wrap">
+                                @foreach (var t in tiers)
+                                {
+                                    <div class="badge badge-pill badge-light border mr-2 mb-2 p-2">
+                                        <span class="text-muted small">@t.MinQuantity@(t.MaxQuantity!=null?"-"+t.MaxQuantity.ToString():"+") adet</span>
+                                        <span class="ml-2 font-weight-semibold">@t.UnitPrice.ToString("C")</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <p class="text-muted">@Model.Description</p>
+                    }
+
+                    <div class="mt-4">
+                        <button class="btn btn-primary" onclick="addToCart(@Model.Id); return false;"><i class="feather icon-shopping-cart mr-1"></i> Sepete Ekle</button>
+                        <button class="btn btn-outline-primary ml-2" data-toggle="modal" data-target="#requestQuoteModal"><i class="feather icon-send mr-1"></i> Teklif Gönder</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><strong>Ürün Özellikleri</strong></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6 mb-2">
+                            <div class="text-muted small">Ürün Kodu</div>
+                            <div class="font-weight-semibold">@Model.SKU</div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <div class="text-muted small">Kategori</div>
+                            <div class="font-weight-semibold">@Model.Category</div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <div class="text-muted small">Marka</div>
+                            <div class="font-weight-semibold">@Model.Brand</div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <div class="text-muted small">Birim</div>
+                            <div class="font-weight-semibold">@Model.Unit</div>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <div class="text-muted small">Durum</div>
+                            <div class="font-weight-semibold">@Model.Status</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+var gallery = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Gallery ?? new System.Collections.Generic.List<string> { Model.ImageUrl ?? "" }));
+var currentIdx = 0;
+function setImage(url){
+  var idx = gallery.indexOf(url);
+  if(idx>=0) currentIdx = idx;
+  document.getElementById('mainImageTag').setAttribute('src', url);
+  renderDots();
+}
+function prevImage(){ if(gallery.length==0) return; currentIdx = (currentIdx-1+gallery.length)%gallery.length; setImage(gallery[currentIdx]); }
+function nextImage(){ if(gallery.length==0) return; currentIdx = (currentIdx+1)%gallery.length; setImage(gallery[currentIdx]); }
+function renderDots(){
+  var dots = document.getElementById('dots'); if(!dots) return;
+  dots.innerHTML = '';
+  for(var i=0;i<gallery.length;i++){
+    var dot = document.createElement('span');
+    dot.style.cssText='display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 3px;'+(i===currentIdx?'background:#007bff;':'background:#dee2e6;');
+    (function(index){ dot.addEventListener('click', function(){ currentIdx=index; setImage(gallery[index]); }); })(i);
+    dots.appendChild(dot);
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){ if(gallery.length>0){ setImage(gallery[0]||''); } });
+// Modal açıldığında miktarı aynala
+$('#requestQuoteModal').on('show.bs.modal', function(){ $('#rqQtyMirror').val($('#qtyInput').val()); });
+
+// Teklif modal submit
+function submitQuoteDetail(){
+    var productId = @Model.Id;
+    var quantity = parseInt(document.getElementById('qtyInput').value || '1', 10);
+    var description = document.getElementById('rqDesc') ? document.getElementById('rqDesc').value : '';
+    if(!quantity || quantity <= 0){ alert('Lütfen geçerli bir miktar girin.'); return; }
+    var token = (document.querySelector('#afForm input[name="__RequestVerificationToken"]')||{}).value;
+    fetch('@Url.Action("RequestQuote","Products")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'RequestVerificationToken': token, 'X-Requested-With':'XMLHttpRequest' },
+        body: new URLSearchParams({ productId: productId, quantity: quantity, description: description })
+    }).then(async function(r){
+        var txt = await r.text();
+        try { var data = JSON.parse(txt); } catch(e) { data = null; }
+        if (data && data.success){ $('#requestQuoteModal').modal('hide');
+            $('<div class="alert alert-success alert-dismissible fade show" role="alert">Teklifiniz gönderildi.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+            .appendTo('.container-p-y').delay(2000).fadeOut(500, function(){ $(this).remove(); });
+        } else { alert((data && data.message) || 'Teklif isteği gönderilirken bir hata oluştu'); }
+    }).catch(function(){ alert('Teklif isteği gönderilirken bir hata oluştu'); });
+}
+
+function addToCart(productId){
+    var quantity = parseInt(document.getElementById('qtyInput').value || '1', 10);
+    if(!quantity || quantity <= 0){
+        $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Geçerli bir miktar girin<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+          .appendTo('.container-p-y').delay(2000).fadeOut(400,function(){ $(this).remove(); });
+        return;
+    }
+    var token = (document.querySelector('#afForm input[name="__RequestVerificationToken"]')||{}).value;
+    fetch('@Url.Action("AddToCart","Products")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'RequestVerificationToken': token, 'X-Requested-With':'XMLHttpRequest' },
+        body: new URLSearchParams({ productId: productId, quantity: quantity })
+    }).then(async function(r){
+        var txt = await r.text();
+        try { var data = JSON.parse(txt); } catch(e) { data = null; }
+        if (data && data.success && data.redirectUrl){ window.location.href = data.redirectUrl; }
+        else if (data && data.success){ window.location.href = '@Url.Action("Index","Cart")'; }
+        else if (r.ok && txt && txt.indexOf('<!DOCTYPE') >= 0) { window.location.href = r.url; }
+        else {
+            $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Sepete eklerken bir hata oluştu'+(data&&data.message?': '+data.message:'')+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+              .appendTo('.container-p-y').delay(2500).fadeOut(400,function(){ $(this).remove(); });
+        }
+    }).catch(function(){
+        $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Sepete eklerken bir hata oluştu<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+          .appendTo('.container-p-y').delay(2500).fadeOut(400,function(){ $(this).remove(); });
+    });
+}
+
+$('#qtyMinus').on('click', function(){ var $i=$('#qtyInput'); var v=parseInt($i.val()||'1',10); if(v>1){$i.val(v-1);} });
+$('#qtyPlus').on('click', function(){ var $i=$('#qtyInput'); var v=parseInt($i.val()||'1',10); $i.val(v+1); });
+</script>
+}
+
+<!-- Teklif İsteme Modal (Detay) -->
+<div class="modal fade" id="requestQuoteModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Teklif Gönder</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Miktar</label>
+          <input type="number" min="1" class="form-control" id="rqQtyMirror" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Not (opsiyonel)</label>
+          <textarea id="rqDesc" class="form-control" rows="3" placeholder="Örn: Teslim süresi, ambalaj vb."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="submitQuoteDetail()">Teklif Gönder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

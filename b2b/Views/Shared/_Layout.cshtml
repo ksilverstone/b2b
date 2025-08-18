@@ -3,7 +3,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="default-style layout-fixed layout-navbar-fixed">
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - B2B Portal</title>
@@ -26,67 +26,157 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" />
 
-    <!-- Font Awesome -->
+    <!-- Icon fonts -->
     <link rel="stylesheet" href="~/fonts/fontawesome.css" />
-    
-    <!-- Feather Icons -->
+    <link rel="stylesheet" href="~/fonts/ionicons.css" />
     <link rel="stylesheet" href="~/fonts/feather.css" />
+    
+    <!-- Sayfa özel stilleri -->
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-    <div class="layout-wrapper layout-content-navbar">
-        <div class="layout-container">
+    <div class="layout-wrapper layout-2">
+        <div class="layout-inner">
 
-            @* 🔹 Sidebar burada yer alıyor *@
+            @* 🔹 Sidebar *@
             @await Html.PartialAsync("~/Views/Shared/_Sidebar.cshtml")
 
-            <div class="layout-page">
+            <div class="layout-container">
 
                 <!-- Navbar -->
-                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-                        <ul class="navbar-nav flex-row align-items-center ms-auto">
-                            <li class="nav-item lh-1 me-3">
-                                <span class="fw-semibold d-block">Merhaba</span>
-                                <small>@User.Identity?.Name</small>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Auth" asp-action="Logout" class="nav-link">
-                                    <i class="feather icon-log-out"></i>
-                                    <span>Çıkış</span>
+                <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-dark container-p-x" id="layout-navbar">
+                    <!-- Brand -->
+                    <a href="/Home/Index" class="navbar-brand app-brand demo d-lg-none py-0 mr-4">
+                        <span class="app-brand-logo demo"><i class="feather icon-shopping-bag"></i></span>
+                        <span class="app-brand-text demo font-weight-normal ml-2">B2B Portal</span>
+                    </a>
+
+                    <!-- Sidenav toggle -->
+                    <div class="layout-sidenav-toggle navbar-nav d-lg-none align-items-lg-center mr-auto">
+                        <a class="nav-item nav-link px-0 mr-lg-4" href="javascript:">
+                            <i class="ion ion-md-menu text-large align-middle"></i>
+                        </a>
+                    </div>
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="navbar-collapse collapse" id="layout-navbar-collapse">
+                        <hr class="d-lg-none w-100 my-2">
+
+                        <div class="navbar-nav align-items-lg-center">
+                            <!-- Search with orange focus underline -->
+                            <label class="nav-item navbar-text navbar-search-box p-0 active">
+                                <i class="feather icon-search navbar-icon align-middle"></i>
+                                <span class="navbar-search-input pl-2">
+                                    <input id="navbarSearch" type="text" class="form-control navbar-text mx-2" placeholder="Ara...">
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="navbar-nav align-items-lg-center ml-auto">
+                            <div class="demo-navbar-notifications nav-item dropdown mr-lg-3">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="#" data-toggle="dropdown">
+                                    <i class="feather icon-bell navbar-icon align-middle"></i>
+                                    <span class="badge badge-danger badge-dot indicator"></span>
+                                    <span class="d-lg-none align-middle">&nbsp; Bildirimler</span>
                                 </a>
-                            </li>
-                        </ul>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <div class="bg-primary text-center text-white font-weight-bold p-3">
+                                        4 Yeni Bildirim
+                                    </div>
+                                    <div class="list-group list-group-flush">
+                                        <a href="javascript:" class="list-group-item list-group-item-action media d-flex align-items-center">
+                                            <div class="ui-icon ui-icon-sm feather icon-home bg-secondary border-0 text-white"></div>
+                                            <div class="media-body line-height-condenced ml-3">
+                                                <div class="text-dark">Bildirim örneği</div>
+                                                <div class="text-light small mt-1">Sistem</div>
+                                                <div class="text-light small mt-1">12 saat önce</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Messages dropdown -->
+                            <div class="demo-navbar-messages nav-item dropdown mr-lg-3">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="#" data-toggle="dropdown">
+                                    <i class="feather icon-mail navbar-icon align-middle"></i>
+                                    <span class="badge badge-warning badge-dot indicator"></span>
+                                    <span class="d-lg-none align-middle">&nbsp; Mesajlar</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <div class="bg-warning text-center text-white font-weight-bold p-3">
+                                        Mesajlar
+                                    </div>
+                                    <div class="list-group list-group-flush">
+                                        <a href="javascript:" class="list-group-item list-group-item-action media d-flex align-items-center">
+                                            <img src="~/img/avatars/2-small.png" class="d-block ui-w-30 rounded-circle" />
+                                            <div class="media-body ml-3">
+                                                <div class="text-dark">Yeni mesaj</div>
+                                                <div class="text-light small mt-1">Merhaba, ürün hakkında...</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-25 mr-3 ml-1">|</div>
+                            <div class="demo-navbar-user nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                                    <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                                        <img src="~/img/avatars/1.png" alt="" class="d-block ui-w-30 rounded-circle">
+                                        <span class="px-1 mr-lg-2 ml-2 ml-lg-0">@User.Identity?.Name</span>
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-user text-muted"></i> &nbsp; Profil
+                                    </a>
+                                    <a href="javascript:" class="dropdown-item">
+                                        <i class="feather icon-settings text-muted"></i> &nbsp; Ayarlar
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a asp-controller="Auth" asp-action="Logout" class="dropdown-item">
+                                        <i class="feather icon-power text-danger"></i> &nbsp; Çıkış
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </nav>
 
-                <!-- 🔸 Sayfa içeriği burada -->
-                <div class="content-wrapper">
-                    <div class="container-xxl flex-grow-1 container-p-y">
+                <!-- 🔸 Sayfa içeriği -->
+                <div class="layout-content">
+                    <div class="container-fluid flex-grow-1 container-p-y">
                         @RenderBody()
                     </div>
+
+                    <!-- Footer -->
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="container-fluid d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                            <div class="mb-2 mb-md-0">
+                                © 2025 - B2B Portal
+                            </div>
+                        </div>
+                    </footer>
                 </div>
 
-            </div> <!-- /layout-page -->
-        </div> <!-- /layout-container -->
+            </div> <!-- /layout-container -->
+        </div> <!-- /layout-inner -->
+        <div class="layout-overlay layout-sidenav-toggle"></div>
     </div> <!-- /layout-wrapper -->
 
-    <!-- Footer -->
-    <footer class="content-footer footer bg-footer-theme">
-        <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-            <div class="mb-2 mb-md-0">
-                © 2025 - B2B Portal
-            </div>
-        </div>
-    </footer>
+    <!-- jQuery - CDN'den tam versiyon yükle -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-    <!-- jQuery -->
-    <script src="~/js/jquery-3.3.1.min.js"></script>
+    
+    <!-- Popper.js (Bootstrap dependency) -->
+    <script src="~/lib/popper/popper.js"></script>
     
     <!-- Bootstrap JS -->
     <script src="~/js/bootstrap.js"></script>
-    
-    <!-- Popper.js -->
-    <script src="~/lib/popper/popper.js"></script>
     
     <!-- Perfect Scrollbar -->
     <script src="~/lib/perfect-scrollbar/perfect-scrollbar.js"></script>
@@ -99,9 +189,8 @@
     
     <!-- Sidenav -->
     <script src="~/js/sidenav.js"></script>
+    <script src="~/js/app-sidenav-init.js"></script>
     
-    <!-- Demo -->
-    <script src="~/js/demo.js"></script>
     
     <!-- Custom JS -->
     <script src="~/js/site.js"></script>

@@ -1,0 +1,237 @@
+@model b2b.Models.CustomerOrder
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Teslimat Takibi";
+}
+
+<div class="container-fluid">
+    <!-- Başlık -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="font-weight-bold py-3 mb-0">Teslimat Takibi - @Model.OrderNumber</h4>
+        </div>
+        <div>
+            <a href="/Accounting/OrderHistory" class="btn btn-secondary">
+                <i class="feather icon-arrow-left mr-2"></i> Geri Dön
+            </a>
+        </div>
+    </div>
+    
+    <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="/Accounting/OrderHistory">Sipariş Geçmişi</a></li>
+            <li class="breadcrumb-item active">Teslimat Takibi</li>
+        </ol>
+    </div>
+
+    <div class="row">
+        <!-- Sipariş Bilgileri -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="feather icon-package mr-2"></i>
+                        Sipariş Bilgileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Sipariş No:</strong></td>
+                            <td>@Model.OrderNumber</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Müşteri:</strong></td>
+                            <td>@Model.Customer?.Name</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tarih:</strong></td>
+                            <td>@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Durum:</strong></td>
+                            <td>
+                                <span class="badge @(Model.Status=="Beklemede"?"badge-warning": Model.Status=="Onaylandı"?"badge-success": Model.Status=="Hazırlanıyor"?"badge-info": Model.Status=="Kargoda"?"badge-primary": Model.Status=="Teslim Edildi"?"badge-success":"badge-secondary")">@Model.Status</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Toplam Tutar:</strong></td>
+                            <td class="font-weight-bold">@Model.TotalAmount.ToString("N2") ₺</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teslimat Formu -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="feather icon-truck mr-2"></i>
+                        Teslimat Bilgileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="deliveryForm">
+                        <div class="form-group">
+                            <label for="trackingNumber">Kargo Takip No</label>
+                            <input type="text" class="form-control" id="trackingNumber" name="trackingNumber" placeholder="Kargo takip numarası">
+                        </div>
+                        <div class="form-group">
+                            <label for="carrier">Kargo Firması</label>
+                            <select class="form-control" id="carrier" name="carrier">
+                                <option value="">Seçiniz</option>
+                                <option value="Yurtiçi Kargo">Yurtiçi Kargo</option>
+                                <option value="Aras Kargo">Aras Kargo</option>
+                                <option value="MNG Kargo">MNG Kargo</option>
+                                <option value="PTT Kargo">PTT Kargo</option>
+                                <option value="UPS">UPS</option>
+                                <option value="DHL">DHL</option>
+                                <option value="FedEx">FedEx</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="estimatedDelivery">Tahmini Teslimat</label>
+                            <input type="date" class="form-control" id="estimatedDelivery" name="estimatedDelivery">
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryNotes">Teslimat Notları</label>
+                            <textarea class="form-control" id="deliveryNotes" name="deliveryNotes" rows="3" placeholder="Teslimat ile ilgili notlar..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="feather icon-save mr-2"></i>
+                            Teslimat Bilgilerini Kaydet
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teslimat Zaman Çizelgesi -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="feather icon-clock mr-2"></i>
+                        Teslimat Zaman Çizelgesi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success">
+                                <i class="feather icon-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">Sipariş Alındı</h6>
+                                <p class="timeline-text">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                        
+                        @if (Model.Status != "Beklemede")
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-info">
+                                    <i class="feather icon-settings"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6 class="timeline-title">Sipariş İşleniyor</h6>
+                                    <p class="timeline-text">Sipariş hazırlanıyor</p>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (Model.Status == "Kargoda" || Model.Status == "Teslim Edildi")
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-primary">
+                                    <i class="feather icon-truck"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6 class="timeline-title">Kargoya Verildi</h6>
+                                    <p class="timeline-text">Sipariş kargoya teslim edildi</p>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (Model.Status == "Teslim Edildi")
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-success">
+                                    <i class="feather icon-home"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6 class="timeline-title">Teslim Edildi</h6>
+                                    <p class="timeline-text">Sipariş müşteriye teslim edildi</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 3px solid #007bff;
+}
+
+.timeline-title {
+    margin: 0 0 5px 0;
+    font-weight: 600;
+}
+
+.timeline-text {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+</style>
+
+<script>
+document.getElementById('deliveryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Form verilerini al
+    const formData = new FormData(this);
+    
+    // API'ye gönder (şimdilik sadece alert)
+    alert('Teslimat bilgileri kaydedildi! (Bu özellik geliştirilecek)');
+    
+    // Formu temizle
+    this.reset();
+});
+</script>

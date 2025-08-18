@@ -1,0 +1,333 @@
+@model b2b.Models.ProductListViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Ürün Kataloğu";
+    ViewBag.ActivePage = "Products";
+}
+
+<!-- [ content ] Start -->
+<div class="container-fluid flex-grow-1 container-p-y">
+    <form id="afGlobal">@Html.AntiForgeryToken()</form>
+    <div class="d-flex">
+        <div class="flex-grow-1">
+            <h4 class="font-weight-bold py-3 mb-0">Ürün Kataloğu</h4>
+        </div>
+    </div>
+    <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+            <li class="breadcrumb-item">Ürünler</li>
+            <li class="breadcrumb-item active">Ürün Kataloğu</li>
+        </ol>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        @Html.AntiForgeryToken()
+        <div class="card-body">
+            <form method="get" id="filterForm">
+                <div class="form-row align-items-center">
+                    <div class="col-md my-2">
+                        <label class="form-label">Arama</label>
+                        <input type="text" class="form-control" name="searchTerm" value="@Model.SearchTerm" placeholder="Ürün adı, SKU, açıklama...">
+                    </div>
+                    <div class="col-md my-2">
+                        <label class="form-label">Kategori</label>
+                        <select class="custom-select" name="category">
+                            <option value="">Tümü</option>
+                            @foreach (var category in Model.Categories)
+                            {
+                                if (Model.CategoryFilter == category)
+                                {
+                                    <option value="@category" selected>@category</option>
+                                }
+                                else
+                                {
+                                    <option value="@category">@category</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md my-2">
+                        <label class="form-label">Marka</label>
+                        <select class="custom-select" name="brand">
+                            <option value="">Tümü</option>
+                            @foreach (var brand in Model.Brands)
+                            {
+                                if (Model.BrandFilter == brand)
+                                {
+                                    <option value="@brand" selected>@brand</option>
+                                }
+                                else
+                                {
+                                    <option value="@brand">@brand</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md col-xl-3 my-2 d-flex align-items-end">
+                        <div class="btn-group w-100">
+                            <button type="submit" class="btn btn-primary">Filtrele</button>
+                            <a href="@Url.Action("Catalog","Products")" class="btn btn-outline-secondary">Sıfırla</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Filters -->
+
+    <!-- Ürün Grid -->
+    <div class="row">
+        @if (Model.Products.Any())
+        {
+            @foreach (var product in Model.Products)
+            {
+                 <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                     <div class="card h-100 shadow-sm border-0" style="transition: box-shadow .2s, transform .2s;">
+                        <!-- Ürün Resmi -->
+                         <a href="@Url.Action("Detail","Products", new { id = product.Id })" class="card-img-top position-relative d-block" style="height: 220px; background: linear-gradient(180deg,#f8f9fa,#ffffff); overflow:hidden;">
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                 <img src="@product.ImageUrl" alt="@product.Name" class="w-100 h-100" style="object-fit: cover; transform: scale(1); transition: transform .3s;">
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="feather icon-package text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            }
+                            @if (product.IsLowStock)
+                            {
+                                <div class="position-absolute top-0 right-0 m-2">
+                                    <span class="badge badge-warning">Kritik Stok</span>
+                                </div>
+                            }
+                             @if (product.Stock == 0)
+                            {
+                                <div class="position-absolute top-0 right-0 m-2">
+                                     <span class="badge badge-dark">Stok Yok</span>
+                                </div>
+                            }
+                         </a>
+
+                        <!-- Ürün Bilgileri -->
+                         <div class="card-body d-flex flex-column">
+                             <h6 class="card-title font-weight-semibold mb-1"><a href="@Url.Action("Detail","Products", new { id = product.Id })" class="text-body">@product.Name</a></h6>
+                            
+                            @if (!string.IsNullOrEmpty(product.Description))
+                            {
+                                <p class="card-text text-muted small">
+                                    @if (product.Description.Length > 100)
+                                    {
+                                        @(product.Description.Substring(0, 100) + "...")
+                                    }
+                                    else
+                                    {
+                                        @product.Description
+                                    }
+                                </p>
+                            }
+
+                             <div class="mt-auto">
+                                <!-- Fiyat -->
+                                 <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="h5 font-weight-bold text-primary mb-0">@product.Price.ToString("C")</span>
+                                    <span class="text-muted small">@product.Stock @product.Unit</span>
+                                </div>
+
+                                <!-- Ürün Detayları -->
+                                <div class="row text-muted small mb-3">
+                                    @if (!string.IsNullOrEmpty(product.Category))
+                                    {
+                                        <div class="col-6">
+                                            <i class="feather icon-tag mr-1"></i> @product.Category
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(product.Brand))
+                                    {
+                                        <div class="col-6">
+                                            <i class="feather icon-award mr-1"></i> @product.Brand
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Butonlar -->
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="requestQuote(@product.Id, '@product.Name')">
+                                        <i class="feather icon-send mr-1"></i> Teklif Gönder
+                                    </button>
+                                    <button type="button" class="btn btn-success btn-sm" onclick="addToCart(@product.Id)">
+                                        <i class="feather icon-shopping-cart mr-1"></i> Sepete Ekle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="text-muted">
+                        <i class="feather icon-package" style="font-size: 4rem;"></i>
+                        <div class="mt-3">
+                            <h5>Aradığınız kriterlere uygun ürün bulunamadı</h5>
+                            <p class="text-muted">Farklı arama kriterleri deneyebilir veya filtreleri temizleyebilirsiniz.</p>
+                            <a href="@Url.Action("Catalog", "Products")" class="btn btn-primary">Filtreleri Temizle</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <!-- / Ürün Grid -->
+
+    <!-- Pagination -->
+    @if (Model.Products.Count() > 12)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Önceki</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Sonraki</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+<!-- [ content ] End -->
+
+<!-- Teklif İsteme Modal -->
+<div class="modal fade" id="requestQuoteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Teklif Gönder</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="requestQuoteForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="requestProductId" name="productId">
+                    <div class="form-group">
+                        <label for="requestProductName" class="form-label">Ürün</label>
+                        <input type="text" id="requestProductName" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestQuantity" class="form-label">Miktar <span class="text-danger">*</span></label>
+                        <input type="number" id="requestQuantity" name="quantity" class="form-control" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestDescription" class="form-label">Teklif Notu (opsiyonel)</label>
+                        <textarea id="requestDescription" name="description" class="form-control" rows="3" placeholder="Örn: Teslim süresi, ambalaj, alternatif marka vb."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" onclick="submitQuoteRequest()">Teklif Gönder</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Filter form submit
+            $('#filterForm select').change(function() {
+                $('#filterForm').submit();
+            });
+
+            // Clear filters
+            $('<button type="button" class="btn btn-outline-secondary ml-2">Sıfırla</button>')
+                .appendTo($('#filterForm .col-md.col-xl-2'))
+                .on('click', function(){
+                    $('#filterForm').find('input[type=text], select').val('');
+                    $('#filterForm').submit();
+                });
+        });
+
+        function requestQuote(productId, productName) {
+            $('#requestProductId').val(productId);
+            $('#requestProductName').val(productName);
+            $('#requestQuantity').val('');
+            $('#requestDescription').val('');
+            $('#requestQuoteModal').modal('show');
+        }
+
+        var rqSubmitting = false;
+        function submitQuoteRequest() {
+            var productId = $('#requestProductId').val();
+            var quantity = $('#requestQuantity').val();
+            var description = $('#requestDescription').val();
+
+            if (!quantity || parseInt(quantity) <= 0) {
+                // Popup yerine form üzerinde uyarı gösterme
+                $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Lütfen geçerli bir miktar girin.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                  .appendTo('#requestQuoteModal .modal-body').delay(2000).fadeOut(500, function(){ $(this).remove(); });
+                return;
+            }
+
+            if (rqSubmitting) return; rqSubmitting = true;
+            var $btn = $('#requestQuoteModal .btn.btn-primary');
+            var oldText = $btn.text(); $btn.prop('disabled', true).text('Gönderiliyor...');
+            var token = document.querySelector('#requestQuoteForm input[name="__RequestVerificationToken"]')?.value || document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+            fetch('@Url.Action("RequestQuote", "Products")', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8', 'RequestVerificationToken': token, 'X-Requested-With':'XMLHttpRequest' },
+                body: new URLSearchParams({ productId: productId, quantity: quantity, description: description })
+            }).then(async function(r){
+                var txt = await r.text();
+                try { var response = JSON.parse(txt); } catch(e) { response = null; }
+                if (response && response.success) {
+                    $('#requestQuoteModal').modal('hide');
+                    $('<div class="alert alert-success alert-dismissible fade show" role="alert">Teklifiniz gönderildi.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                      .appendTo('.container-p-y').delay(2000).fadeOut(500, function(){ $(this).remove(); });
+                } else {
+                    // Popup kullanma, sayfa içinde uyarı göster
+                    $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Teklif isteği gönderilirken bir hata oluştu'+(response && response.message?': '+response.message:'')+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                      .appendTo('.container-p-y').delay(3000).fadeOut(500, function(){ $(this).remove(); });
+                }
+            }).catch(function(){
+                $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Teklif isteği gönderilirken bir hata oluştu.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                  .appendTo('.container-p-y').delay(3000).fadeOut(500, function(){ $(this).remove(); });
+            }).finally(function(){ rqSubmitting = false; $btn.prop('disabled', false).text(oldText); });
+        }
+
+        function addToCart(productId) {
+            var qty = 1; // Katalogdan hızlı ekleme: varsayılan 1
+            var tokenEl = document.querySelector('#afGlobal input[name="__RequestVerificationToken"]') || document.querySelector('input[name="__RequestVerificationToken"]');
+            var token = tokenEl ? tokenEl.value : '';
+            fetch('@Url.Action("AddToCart","Products")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'RequestVerificationToken': token, 'X-Requested-With':'XMLHttpRequest' },
+                body: new URLSearchParams({ productId: productId, quantity: qty })
+            }).then(async function(r){
+                var txt = await r.text();
+                try { var data = JSON.parse(txt); } catch(e) { data = null; }
+                if (data && data.success && data.redirectUrl){ window.location.href = data.redirectUrl; }
+                else if (data && data.success){ window.location.href = '@Url.Action("Index","Cart")'; }
+                else if (r.ok && txt && txt.indexOf('<!DOCTYPE') >= 0) { window.location.href = r.url; }
+                else {
+                    $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Sepete eklerken bir hata oluştu<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                      .appendTo('.container-p-y').delay(3000).fadeOut(500, function(){ $(this).remove(); });
+                }
+            }).catch(function(){
+                $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Sepete eklerken bir hata oluştu<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                  .appendTo('.container-p-y').delay(3000).fadeOut(500, function(){ $(this).remove(); });
+            });
+        }
+        // Detay butonu artık yönlendiriyor
+    </script>
+} 

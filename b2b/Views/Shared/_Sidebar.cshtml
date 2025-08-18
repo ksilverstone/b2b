@@ -22,191 +22,70 @@
             </a>
         </li>
 
-        @* Eğer kullanıcı müşteri ise *@
-        @if (!User.IsInRole("Seller"))
+        @* Alıcı (müşteri) tarafı *@
+        @if (!(User.IsInRole("Seller") || User.IsInRole("Satıcı")))
         {
-            <!-- Kampanyalar -->
+            <!-- Ürün Kataloğu -->
             <li class="sidenav-item">
-                <a href="javascript:" class="sidenav-link sidenav-toggle">
-                    <i class="sidenav-icon feather icon-tag"></i>
-                    <div>Kampanyalar</div>
-                </a>
-                <ul class="sidenav-menu">
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Index" class="sidenav-link">
-                            <div>Kampanyalar</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Filtered" class="sidenav-link">
-                            <div>Kategorilerime Özel</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/MyCampaigns" class="sidenav-link">
-                            <div>Kampanyalarım</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Expiring" class="sidenav-link">
-                            <div>Süresi Bitmek Üzere Olanlar</div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <!-- Teklifler -->
-            <li class="sidenav-item">
-                <a href="javascript:" class="sidenav-link sidenav-toggle">
-                    <i class="sidenav-icon feather icon-file-text"></i>
-                    <div>Teklifler</div>
-                </a>
-                <ul class="sidenav-menu">
-                    <li class="sidenav-item">
-                        <a href="/Offer/Create" class="sidenav-link">
-                            <div>Teklif Oluştur</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Offer/MyOffers" class="sidenav-link">
-                            <div>Tekliflerim</div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <!-- Satıcılar -->
-            <li class="sidenav-item">
-                <a href="/Seller/Index" class="sidenav-link">
-                    <i class="sidenav-icon feather icon-shopping-bag"></i>
-                    <div>Satıcılar</div>
+                <a href="/Products/Catalog" class="sidenav-link">
+                    <i class="sidenav-icon feather icon-package"></i>
+                    <div>Ürün Kataloğu</div>
                 </a>
             </li>
 
-            <!-- Satıcı Başvurusu -->
+            <!-- Sepetim -->
             <li class="sidenav-item">
-                <a href="/Account/BecomeSeller" class="sidenav-link">
-                    <i class="sidenav-icon feather icon-check-circle"></i>
-                    <div>Satıcı Başvurusu</div>
+                <a href="/Cart/Index" class="sidenav-link">
+                    <i class="sidenav-icon feather icon-shopping-cart"></i>
+                    <div>Sepetim</div>
                 </a>
             </li>
+
+            <!-- Siparişlerim -->
+            <li class="sidenav-item">
+                <a href="/Orders/MyOrders" class="sidenav-link">
+                    <i class="sidenav-icon feather icon-clipboard"></i>
+                    <div>Siparişlerim</div>
+                </a>
+            </li>
+
+            <!-- Teklif Taleplerim -->
+            <li class="sidenav-item">
+                <a href="/Products/MyRequests" class="sidenav-link">
+                    <i class="sidenav-icon feather icon-message-square"></i>
+                    <div>Teklif Taleplerim</div>
+                </a>
+            </li>
+
+            @* Rapor sayfaları alıcıda yok *@
         }
         else
         {
-            <!-- Cari Yönetimi-->
             <li class="sidenav-item">
                 <a href="javascript:" class="sidenav-link sidenav-toggle">
                     <i class="sidenav-icon feather icon-folder"></i>
-                    <div>Cari Yönetim</div>
+                    <div>Cari Yönetimi</div>
                 </a>
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item">
-                        <a href="/Accounting/Accounts" class="sidenav-link">
-                            <div>Cari Listesi</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="javascript:void(0)" class="sidenav-link" onclick="showStatementModal()">
-                            <div>Cari Ekstresi</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Accounting/OrderHistory" class="sidenav-link">
-                            <div>Sipariş Geçmişi</div>
-                        </a>
-                    </li>
+                    <li class="sidenav-item"><a href="/Accounting/Accounts" class="sidenav-link"><div>Cari Listesi</div></a></li>
+                    <li class="sidenav-item"><a href="/Accounting/OrderHistory" class="sidenav-link"><div>Sipariş Geçmişi</div></a></li>
                 </ul>
             </li>
-
-            <!-- Kampanyalar -->
             <li class="sidenav-item">
                 <a href="javascript:" class="sidenav-link sidenav-toggle">
-                    <i class="sidenav-icon feather icon-tag"></i>
-                    <div>Kampanyalar</div>
+                    <i class="sidenav-icon feather icon-package"></i>
+                    <div>Ürünler</div>
                 </a>
                 <ul class="sidenav-menu">
-                    <li class="sidenav-item">
-                        <a href="/Campaign/MyCampaigns" class="sidenav-link">
-                            <div>Kampanyalarım</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Create" class="sidenav-link">
-                            <div>Yeni Kampanya</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/PendingApproval" class="sidenav-link">
-                            <div>Onay Bekleyen Kampanyalar</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Archived" class="sidenav-link">
-                            <div>Arşivlenmiş Kampanyalar</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Expiring" class="sidenav-link">
-                            <div>Süresi Bitmek Üzere Olanlar</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Stats" class="sidenav-link">
-                            <div>Kampanya İstatistikleri</div>
-                        </a>
-                    </li>
-                    <li class="sidenav-item">
-                        <a href="/Campaign/Templates" class="sidenav-link">
-                            <div>Kampanya Şablonları</div>
-                        </a>
-                    </li>
+                    <li class="sidenav-item"><a href="/Products/List" class="sidenav-link"><div>Ürün Listesi</div></a></li>
+                    <li class="sidenav-item"><a href="/Products/Create" class="sidenav-link"><div>Yeni Ürün Ekle</div></a></li>
+                    <li class="sidenav-item"><a href="/Products/Stock" class="sidenav-link"><div>Stok Takibi</div></a></li>
+                    <li class="sidenav-item"><a href="/Products/Requests" class="sidenav-link"><div>Teklif Talepleri</div></a></li>
                 </ul>
-            </li>
-
-            <!-- Gelen Teklifler -->
-            <li class="sidenav-item">
-                <a href="/Offer/Received" class="sidenav-link">
-                    <i class="sidenav-icon feather icon-inbox"></i>
-                    <div>Gelen Teklifler</div>
-                </a>
-            </li>
-
-            <!-- PDF Dökümanlar -->
-            <li class="sidenav-item">
-                <a href="/Document/PDFs" class="sidenav-link">
-                    <i class="sidenav-icon feather icon-file"></i>
-                    <div>PDF Dökümanlarım</div>
-                </a>
-            </li>
-
-            <!-- Müşteriler -->
-            <li class="sidenav-item">
-                <a href="/Customer/Index" class="sidenav-link">
-                    <i class="sidenav-icon feather icon-users"></i>
-                    <div>Müşteriler</div>
-                </a>
             </li>
         }
 
-        <!-- Raporlar -->
-        <li class="sidenav-item">
-            <a href="javascript:" class="sidenav-link sidenav-toggle">
-                <i class="sidenav-icon feather icon-bar-chart-2"></i>
-                <div>Raporlar</div>
-            </a>
-            <ul class="sidenav-menu">
-                <li class="sidenav-item">
-                    <a href="/Reports/Analytics" class="sidenav-link">
-                        <div>Analitik Ekranı</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="/Reports/Performance" class="sidenav-link">
-                        <div>Performans Raporları</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
+        @* Alıcı tarafında raporlar gizlendi *@
 
         <!-- Yardım -->
         <li class="sidenav-item">

@@ -2,6 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using b2b.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IO;
 
 namespace b2b.Controllers
 {
@@ -15,11 +20,16 @@ namespace b2b.Controllers
             _context = context;
         }
 
-        // Cari Listesi - Sadece Satıcı ve Admin görebilir
+        // Cari listesi
         [Authorize]
         public async Task<IActionResult> Accounts()
         {
             ViewBag.ActivePage = "Accounts";
+            
+            // Cache engelle
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
             
             // Rol kontrolü
             if (!User.IsInRole("Seller") && !User.IsInRole("Admin"))
@@ -44,7 +54,7 @@ namespace b2b.Controllers
                 TaxNumber = c.TaxNumber ?? "",
                 TaxOffice = c.TaxOffice ?? "",
                 Balance = c.Balance,
-                Group = c.Group,
+                CustomerGroup = c.CustomerGroup,
                 Status = c.Status,
                 CreatedDate = c.CreatedDate,
                 LastTransactionDate = c.Transactions.Any() ? c.Transactions.Max(t => t.TransactionDate) : null
@@ -53,7 +63,7 @@ namespace b2b.Controllers
             return View(accountViewModels);
         }
 
-        // Cari Ekstresi - Sadece Satıcı ve Admin görebilir
+        // Cari ekstresi
         [Authorize]
         public async Task<IActionResult> Statement(int id)
         {
@@ -65,7 +75,7 @@ namespace b2b.Controllers
                 return RedirectToAction("AccessDenied", "Auth");
             }
 
-            // Cari bilgilerini veritabanından bul
+            // Cari bilgilerini getir
             var customer = await _context.Customers
                 .Include(c => c.Transactions.OrderByDescending(t => t.TransactionDate))
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -75,7 +85,7 @@ namespace b2b.Controllers
                 return RedirectToAction("Accounts");
             }
 
-            // AccountViewModel'e dönüştür
+            // ViewModel'e dönüştür
             var account = new AccountViewModel
             {
                 Id = customer.Id,
@@ -86,7 +96,7 @@ namespace b2b.Controllers
                 TaxNumber = customer.TaxNumber ?? "",
                 TaxOffice = customer.TaxOffice ?? "",
                 Balance = customer.Balance,
-                Group = customer.Group,
+                CustomerGroup = customer.CustomerGroup,
                 Status = customer.Status,
                 CreatedDate = customer.CreatedDate
             };
@@ -113,7 +123,7 @@ namespace b2b.Controllers
 
 
 
-        // Yeni cari ekleme
+        // Yeni cari ekle
         [HttpPost]
         public async Task<IActionResult> AddAccount([FromBody] AddAccountRequest request)
         {
@@ -128,7 +138,6 @@ namespace b2b.Controllers
                 // Yeni cari oluştur
                 var newCustomer = new Customer
                 {
-                    CompanyId = 1, // Tek firma olduğu için sabit
                     Name = request.Name,
                     Email = request.Email,
                     Phone = request.Phone,
@@ -136,8 +145,9 @@ namespace b2b.Controllers
                     TaxNumber = request.TaxNumber,
                     TaxOffice = request.TaxOffice,
                     Balance = request.Balance,
-                    Group = request.Group,
+                    CustomerGroup = request.CustomerGroup,
                     Status = request.IsActive ? "Aktif" : "Pasif",
+                    IsActive = request.IsActive,
                     CreatedDate = DateTime.Now
                 };
 
@@ -155,7 +165,7 @@ namespace b2b.Controllers
                     TaxNumber = newCustomer.TaxNumber ?? "",
                     TaxOffice = newCustomer.TaxOffice ?? "",
                     Balance = newCustomer.Balance,
-                    Group = newCustomer.Group,
+                    CustomerGroup = newCustomer.CustomerGroup,
                     Status = newCustomer.Status,
                     CreatedDate = newCustomer.CreatedDate
                 };
@@ -168,7 +178,7 @@ namespace b2b.Controllers
             }
         }
 
-        // Cari silme
+        // Cari sil
         [HttpPost]
         public async Task<IActionResult> DeleteAccount(int id)
         {
@@ -225,12 +235,12 @@ namespace b2b.Controllers
                     TaxNumber = customer.TaxNumber ?? "",
                     TaxOffice = customer.TaxOffice ?? "",
                     Balance = customer.Balance,
-                    Group = customer.CustomerGroup,
+                    CustomerGroup = customer.CustomerGroup,
                     Status = customer.Status,
                     CreatedDate = customer.CreatedDate
                 };
 
-                // JavaScript için küçük harfli property'ler
+                // JavaScript için küçük harfli alanlar
                 var accountData = new
                 {
                     id = customer.Id,
@@ -241,7 +251,7 @@ namespace b2b.Controllers
                     taxNumber = customer.TaxNumber ?? "",
                     taxOffice = customer.TaxOffice ?? "",
                     balance = customer.Balance,
-                    group = customer.Group,
+                    group = customer.CustomerGroup,
                     status = customer.Status,
                     isActive = customer.IsActive,
                     createdDate = customer.CreatedDate
@@ -255,7 +265,7 @@ namespace b2b.Controllers
             }
         }
 
-        // Cari güncelleme
+        // Cari güncelle
         [HttpPost]
         public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequest request)
         {
@@ -296,7 +306,7 @@ namespace b2b.Controllers
                     TaxNumber = customer.TaxNumber ?? "",
                     TaxOffice = customer.TaxOffice ?? "",
                     Balance = customer.Balance,
-                    Group = customer.CustomerGroup,
+                    CustomerGroup = customer.CustomerGroup,
                     Status = customer.Status,
                     CreatedDate = customer.CreatedDate
                 };
@@ -309,7 +319,7 @@ namespace b2b.Controllers
             }
         }
 
-        // Yeni işlem ekleme
+        // Yeni işlem ekle
         [HttpPost]
         public async Task<IActionResult> AddTransaction([FromBody] AddTransactionRequest request)
         {
@@ -321,7 +331,7 @@ namespace b2b.Controllers
                     return Json(new { success = false, message = "Yetkiniz bulunmamaktadır." });
                 }
 
-                var customer = await _context.Customers.FindAsync(request.CustomerId);
+                var customer = await _context.Customers.Include(x=>x.Transactions).FirstOrDefaultAsync(x=>x.Id==request.CustomerId);
                 if (customer == null)
                 {
                     return Json(new { success = false, message = "Cari bulunamadı." });
@@ -352,6 +362,8 @@ namespace b2b.Controllers
                     customer.Balance -= request.Amount;
                 }
 
+                // Satırın bakiye alanını doldur
+                newTransaction.Balance = customer.Balance;
                 await _context.SaveChangesAsync();
 
                 return Json(new { success = true, message = "İşlem başarıyla eklendi." });
@@ -362,7 +374,7 @@ namespace b2b.Controllers
             }
         }
 
-        // Static liste artık kullanılmıyor, veritabanından geliyor
+        // Statik liste kullanılmıyor
 
         // Genel sipariş geçmişi
         [Authorize]
@@ -379,82 +391,227 @@ namespace b2b.Controllers
                 var orders = await _context.CustomerOrders
                     .Include(o => o.Customer)
                     .OrderByDescending(o => o.OrderDate)
-                    .Select(o => new b2b.Controllers.OrderHistoryViewModel
-                    {
-                        OrderNumber = o.OrderNumber,
-                        OrderDate = o.OrderDate,
-                        CustomerId = o.CustomerId,
-                        CustomerName = o.Customer.Name,
-                        ItemCount = o.ItemCount,
-                        TotalAmount = o.TotalAmount,
-                        Status = o.Status,
-                        Description = o.Description ?? ""
-                    })
                     .ToListAsync();
 
-                return View("~/Views/Orders/History.cshtml", orders);
+                var orderViewModels = orders.Select(o => new b2b.Controllers.OrderHistoryViewModel
+                {
+                    OrderNumber = o.OrderNumber,
+                    OrderDate = o.OrderDate,
+                    CustomerId = o.CustomerId,
+                    CustomerName = o.Customer?.Name ?? "",
+                    ItemCount = o.ItemCount,
+                    TotalAmount = o.TotalAmount,
+                    Status = o.Status ?? "",
+                    Description = o.Description ?? ""
+                }).ToList();
+
+                return View("OrderHistory", orderViewModels);
+
+                return View("OrderHistory", orders);
             }
-            catch (Exception ex)
+            catch
             {
-                return View("~/Views/Orders/History.cshtml", new List<b2b.Controllers.OrderHistoryViewModel>());
+                return View("OrderHistory", new List<b2b.Controllers.OrderHistoryViewModel>());
             }
         }
 
         // Belirli bir carinin sipariş geçmişi
         [Authorize]
+        [Route("CustomerOrderHistory/{customerId}")]
         public async Task<IActionResult> CustomerOrderHistory(int customerId)
         {
             try
             {
-                // Debug için başlangıç logu
-                System.Diagnostics.Debug.WriteLine($"CustomerOrderHistory başlatıldı: CustomerId={customerId}");
-
                 // Rol kontrolü
                 if (!User.IsInRole("Seller") && !User.IsInRole("Admin"))
                 {
-                    System.Diagnostics.Debug.WriteLine("Rol kontrolü başarısız");
                     return RedirectToAction("AccessDenied", "Auth");
                 }
 
-                var customer = await _context.Customers.FindAsync(customerId);
+                // Cari bilgilerini bul
+                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == customerId);
                 if (customer == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Customer bulunamadı: CustomerId={customerId}");
                     return RedirectToAction("Accounts");
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Customer bulundu: {customer.Name}");
-
+                // Sadece bu carinin siparişlerini getir
                 var orders = await _context.CustomerOrders
                     .Where(o => o.CustomerId == customerId)
                     .OrderByDescending(o => o.OrderDate)
-                    .Select(o => new b2b.Controllers.OrderHistoryViewModel
-                    {
-                        OrderNumber = o.OrderNumber,
-                        OrderDate = o.OrderDate,
-                        CustomerId = o.CustomerId,
-                        CustomerName = customer.Name,
-                        ItemCount = o.ItemCount,
-                        TotalAmount = o.TotalAmount,
-                        Status = o.Status,
-                        Description = o.Description ?? ""
-                    })
                     .ToListAsync();
+
+                var orderViewModels = orders.Select(o => new b2b.Controllers.OrderHistoryViewModel
+                {
+                    OrderNumber = o.OrderNumber,
+                    OrderDate = o.OrderDate,
+                    CustomerId = o.CustomerId,
+                    CustomerName = o.Customer?.Name ?? "",
+                    ItemCount = o.ItemCount,
+                    TotalAmount = o.TotalAmount,
+                    Status = o.Status ?? "",
+                    Description = o.Description ?? string.Empty
+                }).ToList();
 
                 ViewBag.CustomerName = customer.Name;
                 ViewBag.CustomerId = customerId;
+                return View("OrderHistory", orderViewModels);
 
-                // Debug için sipariş sayısını logla
-                System.Diagnostics.Debug.WriteLine($"CustomerOrderHistory: CustomerId={customerId}, CustomerName={customer.Name}, OrderCount={orders.Count}");
+                ViewBag.CustomerName = customer.Name;
+                ViewBag.CustomerId = customerId;
+                return View("OrderHistory", orders);
+            }
+            catch
+            {
+                return RedirectToAction("Accounts");
+            }
+        }
 
-                return View("~/Views/Orders/History.cshtml", orders);
+        // Fatura oluşturma
+        [HttpGet]
+        [Authorize(Roles = "Seller,Admin")]
+        public async Task<IActionResult> CreateInvoice(string orderNumber)
+        {
+            try
+            {
+                var order = await _context.CustomerOrders
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .ThenInclude(oi => oi.Product)
+                    .FirstOrDefaultAsync(o => o.OrderNumber == orderNumber);
+
+                if (order == null)
+                    return RedirectToAction("OrderHistory");
+
+                // Fatura numarası oluştur
+                var invoiceNumber = $"INV-{DateTime.Now:yyyyMMdd}-{orderNumber}";
+                
+                // Fatura oluştur
+                var invoice = new b2b.Models.Invoice
+                {
+                    InvoiceNumber = invoiceNumber,
+                    OrderId = order.Id,
+                    CustomerId = order.CustomerId,
+                    InvoiceDate = DateTime.Now,
+                    DueDate = DateTime.Now.AddDays(30),
+                    TotalAmount = order.TotalAmount,
+                    Status = "Beklemede",
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Invoices.Add(invoice);
+                await _context.SaveChangesAsync();
+
+                // Fatura detayları sayfasına yönlendir
+                return RedirectToAction("InvoiceDetails", new { invoiceId = invoice.Id });
+            }
+            catch
+            {
+                return RedirectToAction("OrderHistory");
+            }
+        }
+
+        // Fatura detayları
+        [HttpGet]
+        [Authorize(Roles = "Seller,Admin")]
+        public async Task<IActionResult> InvoiceDetails(int invoiceId)
+        {
+            try
+            {
+                var invoice = await _context.Invoices
+                    .Include(i => i.Customer)
+                    .Include(i => i.Order)
+                    .ThenInclude(oi => oi.Items)
+                    .ThenInclude(oi => oi.Product)
+                    .FirstOrDefaultAsync(i => i.Id == invoiceId);
+
+                if (invoice == null)
+                    return RedirectToAction("OrderHistory");
+
+                return View("InvoiceDetails", invoice);
+            }
+            catch
+            {
+                return RedirectToAction("OrderHistory");
+            }
+        }
+
+
+
+
+
+
+
+        // Sipariş durumu güncelleme
+        [HttpPost]
+        [Authorize(Roles = "Seller,Admin")]
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusModel model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.OrderNumber))
+                {
+                    return Json(new { success = false, message = "Sipariş numarası boş olamaz." });
+                }
+                
+                var order = await _context.CustomerOrders
+                    .FirstOrDefaultAsync(o => o.OrderNumber == model.OrderNumber);
+                    
+                if (order == null)
+                {
+                    return Json(new { success = false, message = "Sipariş bulunamadı." });
+                }
+                
+                var oldStatus = order.Status;
+                order.Status = model.Status;
+                order.UpdatedDate = DateTime.Now;
+                
+                // Önce siparişi güncelle
+                _context.CustomerOrders.Update(order);
+                await _context.SaveChangesAsync();
+                
+                // Durum geçmişi şimdilik kaldırıldı (DbSet yok)
+                
+                return Json(new { success = true, message = "Durum başarıyla güncellendi." });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"CustomerOrderHistory Error: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"CustomerOrderHistory StackTrace: {ex.StackTrace}");
-                return RedirectToAction("Accounts");
+                return Json(new { success = false, message = "Durum güncellenirken hata oluştu." });
             }
+        }
+
+
+
+        // Teslimat takibi
+        [HttpGet]
+        [Authorize(Roles = "Seller,Admin")]
+        public async Task<IActionResult> TrackDelivery(string orderNumber)
+        {
+            try
+            {
+                var order = await _context.CustomerOrders
+                    .Include(o => o.Customer)
+                    .FirstOrDefaultAsync(o => o.OrderNumber == orderNumber);
+
+                if (order == null)
+                    return RedirectToAction("OrderHistory");
+
+                return View("TrackDelivery", order);
+            }
+            catch
+            {
+                return RedirectToAction("OrderHistory");
+            }
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userEmail = User.Identity?.Name;
+            if (string.IsNullOrEmpty(userEmail))
+                return 0;
+
+            var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+            return user?.Id ?? 0;
         }
     }
 
@@ -468,7 +625,7 @@ namespace b2b.Controllers
         public string TaxNumber { get; set; } = string.Empty;
         public string TaxOffice { get; set; } = string.Empty;
         public decimal Balance { get; set; }
-        public string Group { get; set; } = string.Empty;
+        public string CustomerGroup { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public DateTime? LastTransactionDate { get; set; }
@@ -499,7 +656,7 @@ namespace b2b.Controllers
         public string TaxNumber { get; set; } = string.Empty;
         public string TaxOffice { get; set; } = string.Empty;
         public decimal Balance { get; set; }
-        public string Group { get; set; } = string.Empty;
+        public string CustomerGroup { get; set; } = string.Empty;
         public bool IsActive { get; set; }
     }
 
@@ -523,5 +680,31 @@ namespace b2b.Controllers
         public string Description { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public string TransactionType { get; set; } = string.Empty; // "Debit" veya "Credit"
+    }
+
+    // Fatura modeli
+    public class Invoice
+    {
+        public int Id { get; set; }
+        public string InvoiceNumber { get; set; }
+        public int OrderId { get; set; }
+        public int CustomerId { get; set; }
+        public DateTime InvoiceDate { get; set; }
+        public DateTime DueDate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public string Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+        
+        // İlişki alanları
+        public Customer Customer { get; set; }
+        public CustomerOrder Order { get; set; }
+    }
+
+    // Sipariş durumu güncelleme modeli
+    public class UpdateOrderStatusModel
+    {
+        public string OrderNumber { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string Note { get; set; } = string.Empty;
     }
 } 

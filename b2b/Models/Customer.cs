@@ -32,22 +32,17 @@ namespace b2b.Models
         public decimal Balance { get; set; } = 0;
         
         [StringLength(50)]
-        public string Group { get; set; } = "Müşteri"; // Müşteri/Tedarikçi
-        
-        public bool IsActive { get; set; } = true;
-        
-        [StringLength(50)]
-        public string CustomerGroup { get; set; } = "Müşteri"; // Müşteri/Tedarikçi
-        
-        [StringLength(20)]
+        public string CustomerGroup { get; set; } = "Müşteri";
+
         public string Status { get; set; } = "Aktif";
+        public bool IsActive { get; set; } = true;
         
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         
         public DateTime? UpdatedDate { get; set; }
         
-        // Navigation properties
-        public virtual Company? Company { get; set; }
+        // İlişki alanları
+        public virtual Company Company { get; set; } = null!;
         public virtual ICollection<CustomerTransaction> Transactions { get; set; } = new List<CustomerTransaction>();
         public virtual ICollection<CustomerOrder> Orders { get; set; } = new List<CustomerOrder>();
     }

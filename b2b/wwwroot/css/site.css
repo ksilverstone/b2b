@@ -20,3 +20,32 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Quantity pill styling */
+.qty-pill {
+  background: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 999px;
+}
+.qty-pill .btn {
+  color: #343a40;
+  font-weight: 600;
+  width: 36px;
+  height: 36px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.qty-pill input[type=number] {
+  width: 90px;
+  text-align: center;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Navbar search focus underline orange */
+#navbarSearch:focus {
+  border-color: #fd7e14 !important;
+  box-shadow: 0 1px 0 0 #fd7e14 !important;
+}

@@ -1,0 +1,428 @@
+@model b2b.Models.UpdateProductRequest
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Ürün Düzenle";
+    ViewBag.ActivePage = "Products";
+}
+
+<!-- [ content ] Start -->
+<div class="container-fluid flex-grow-1 container-p-y">
+    <div class="d-flex">
+        <div class="flex-grow-1">
+            <h4 class="font-weight-bold py-3 mb-0">Ürün Düzenle</h4>
+        </div>
+        <div class="">
+            <a href="@Url.Action("List", "Products")" class="btn btn-secondary btn-glow-secondary">
+                <span class="ion ion-md-arrow-back"></span>&nbsp; Geri Dön
+            </a>
+        </div>
+    </div>
+    <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+            <li class="breadcrumb-item">Ürünler</li>
+            <li class="breadcrumb-item"><a href="@Url.Action("List", "Products")">Ürün Listesi</a></li>
+            <li class="breadcrumb-item active">Ürün Düzenle</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                
+                <div class="row">
+                    <!-- Sol Kolon -->
+                    <div class="col-md-8">
+                        <h6 class="small font-weight-semibold mb-4">Temel Bilgiler</h6>
+                        
+                        <div class="form-group">
+                            <label asp-for="Name" class="form-label">Ürün Adı <span class="text-danger">*</span>
+                                <span class="text-muted" data-toggle="tooltip" title="Müşterilerin göreceği ürün adı.">
+                                    <i class="feather icon-info"></i>
+                                </span>
+                            </label>
+                            <input asp-for="Name" type="text" class="form-control is-required" placeholder="Ürün adını girin">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label">Açıklama
+                                <span class="text-muted" data-toggle="tooltip" title="Kısa ve bilgilendirici açıklama yazın.">
+                                    <i class="feather icon-info"></i>
+                                </span>
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Ürün açıklamasını girin"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="SKU" class="form-label">SKU
+                                        <span class="text-muted" data-toggle="tooltip" title="Stok takip için benzersiz kod."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="SKU" type="text" class="form-control" placeholder="SKU kodu">
+                                    <span asp-validation-for="SKU" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Category" class="form-label">Kategori
+                                        <span class="text-muted" data-toggle="tooltip" title="Ürünün ait olduğu kategori."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Category" type="text" class="form-control" placeholder="Kategori adı">
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Brand" class="form-label">Marka
+                                        <span class="text-muted" data-toggle="tooltip" title="Ürünün marka bilgisi."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Brand" type="text" class="form-control" placeholder="Marka adı">
+                                    <span asp-validation-for="Brand" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Unit" class="form-label">Birim
+                                        <span class="text-muted" data-toggle="tooltip" title="Adet, Kg vb."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <select asp-for="Unit" class="custom-select">
+                                        <option value="Adet">Adet</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="Lt">Lt</option>
+                                        <option value="Mt">Mt</option>
+                                        <option value="Paket">Paket</option>
+                                        <option value="Kutu">Kutu</option>
+                                    </select>
+                                    <span asp-validation-for="Unit" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Price" class="form-label">Fiyat (₺) <span class="text-danger">*</span>
+                                        <span class="text-muted" data-toggle="tooltip" title="Vergi dahil satış fiyatı."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Price" type="number" step="0.01" class="form-control is-required" placeholder="0.00" onfocus="if(this.value=='0' || this.value=='0.00'){this.value='';}" onblur="if(this.value===''){this.value='0';}">
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Stock" class="form-label">Stok Miktarı <span class="text-danger">*</span>
+                                        <span class="text-muted" data-toggle="tooltip" title="Mevcut stok miktarı."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Stock" type="number" class="form-control is-required" placeholder="0" onfocus="if(this.value=='0'){this.value='';}" onblur="if(this.value===''){this.value='0';}">
+                                    <span asp-validation-for="Stock" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="MinStock" class="form-label">Kritik Stok</label>
+                                    <input asp-for="MinStock" type="number" class="form-control" placeholder="0">
+                                    <span asp-validation-for="MinStock" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ürün Fotoğrafı</label>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab-url" role="tab">URL</a></li>
+                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-upload" role="tab">Dosya Yükle</a></li>
+                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-multi" role="tab">Çoklu</a></li>
+                            </ul>
+                            <div class="tab-content p-3 border border-top-0 rounded-bottom">
+                                <div class="tab-pane fade show active" id="tab-url" role="tabpanel">
+                                    <input asp-for="ImageUrl" type="url" class="form-control" placeholder="https://example.com/image.jpg">
+                                </div>
+                                <div class="tab-pane fade" id="tab-upload" role="tabpanel">
+                                    <input type="file" name="ImageFile" id="ImageFile" accept="image/*" class="form-control-file">
+                                </div>
+                                <div class="tab-pane fade" id="tab-multi" role="tabpanel">
+                                    <div class="d-flex mb-2">
+                                        <input type="file" id="GalleryPicker" accept="image/*" class="form-control-file">
+                                        <button type="button" class="btn btn-sm btn-primary ml-2" id="AddImageBtn"><i class="feather icon-plus"></i> Ekle</button>
+                                    </div>
+                                    <small class="text-muted d-block">Görselleri sürükleyip bırakarak sıralayabilirsiniz. Yıldız ile kapak seçebilirsiniz.</small>
+                                    <div id="galleryManager" class="d-flex flex-wrap mt-2"></div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Sağ Kolon -->
+                    <div class="col-md-4">
+                        <!-- Başlık sadeleştirildi -->
+                        
+                        <!-- Aktif Durum kaldırıldı: Aşağıda Durum alanı mevcut -->
+
+                        <div class="form-group">
+                            <label asp-for="Status" class="form-label">Durum</label>
+                            <span class="text-muted" data-toggle="tooltip" title="Ürün yayın durumunu seçin."><i class="feather icon-info"></i></span>
+                            <select asp-for="Status" class="custom-select">
+                                <option value="Aktif">Aktif</option>
+                                <option value="Pasif">Pasif</option>
+                                <option value="Tükendi">Tükendi</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <hr class="m-0">
+
+                        <h6 class="small font-weight-semibold mb-4 mt-4">Önizleme</h6>
+                        <div class="text-center">
+                            <div id="imagePreview" class="ui-w-200 mx-auto mb-3" style="width: 240px; height: 240px; background-color: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                {
+                                    <img src="@Model.ImageUrl" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <i class="feather icon-image text-muted" style="font-size: 3rem;"></i>
+                                }
+                            </div>
+                            <small class="text-muted d-block mb-3">Ürün resmi burada görünecek</small>
+                            <div class="card">
+                                <div class="card-header"><strong>Sayfadaki Önizleme</strong></div>
+                                <div class="card-body">
+                                    <div class="media">
+                                        <img id="previewThumb" src="@Model.ImageUrl" class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "d-none" : "") mr-3 rounded" style="width:72px;height:72px;object-fit:cover;" />
+                                        <div class="media-body">
+                                            <h5 class="mt-0" id="previewName">@Model.Name</h5>
+                                            <div class="text-muted small" id="previewCategory">@((Model.Category ?? "Kategori") + " • " + (Model.Brand ?? "Marka"))</div>
+                                            <div class="mt-2"><span class="badge badge-success" id="previewPrice">@Model.Price.ToString("N2") ₺</span> <span class="badge badge-secondary" id="previewStock">Stok: @Model.Stock @Model.Unit</span></div>
+                                            <p class="mt-2 mb-0" id="previewDesc">@(!string.IsNullOrEmpty(Model.Description) ? (Model.Description.Length>120? Model.Description.Substring(0,117)+"..." : Model.Description) : "Kısa açıklama burada görünecek.")</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="m-0">
+
+                <div class="text-right mt-3">
+                    <a href="@Url.Action("List", "Products")" class="btn btn-default">İptal</a>
+                    <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- [ content ] End -->
+
+@section Scripts {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            if (!$.fn || !$.fn.sortable) {
+                console.warn('jQuery UI sortable yüklü değil, galeri sürükle-bırak devre dışı.');
+            }
+            $('[data-toggle="tooltip"]').tooltip();
+            // Resim URL değiştiğinde önizleme göster
+            $('#ImageUrl').on('input', function() {
+                var imageUrl = $(this).val();
+                var preview = $('#imagePreview');
+                
+                if (imageUrl && imageUrl.trim() !== '') {
+                    preview.html('<img src="' + imageUrl + '" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">');
+                    $('#previewThumb').attr('src', imageUrl).removeClass('d-none');
+                } else {
+                    preview.html('<i class="feather icon-image text-muted" style="font-size: 3rem;"></i>');
+                    $('#previewThumb').addClass('d-none');
+                }
+            });
+
+            $('#ImageFile').on('change', function(e){
+                var file = e.target.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function(ev){
+                    var url = ev.target.result;
+                    $('#imagePreview').html('<img src="' + url + '" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">');
+                    $('#previewThumb').attr('src', url).removeClass('d-none');
+                };
+                reader.readAsDataURL(file);
+            });
+
+            $('#Name').on('input', function(){ $('#previewName').text($(this).val() || 'Ürün Adı'); });
+            $('#Category, #Brand').on('input', function(){
+                var c = $('#Category').val(); var b = $('#Brand').val();
+                var text = (c?c:'Kategori') + ' • ' + (b?b:'Marka');
+                $('#previewCategory').text(text);
+            });
+            $('#Price').on('input', function(){
+                var v = parseFloat($(this).val());
+                $('#previewPrice').text(isNaN(v) ? '0,00 ₺' : v.toLocaleString('tr-TR', {minimumFractionDigits:2}) + ' ₺');
+            });
+            $('#Stock, #Unit').on('input change', function(){
+                var s = parseFloat($('#Stock').val()) || 0; var u = $('#Unit').val() || '';
+                $('#previewStock').text('Stok: ' + s + (u? ' ' + u: ''));
+            });
+            $('#Description').on('input', function(){
+                var d = $(this).val() || 'Kısa açıklama burada görünecek.';
+                $('#previewDesc').text(d.length>120 ? d.substring(0,117)+'...' : d);
+            });
+
+            // Görsel yönetimi (Ekle/Kaldır/Sırala/Kapak)
+            var galleryState = { productId: @Model.Id, items: [] };
+            function refreshGallery() {
+                console.log('Galeri yenileniyor...');
+                fetch('@Url.Action("Images","Products")?productId=@Model.Id', { headers: { 'X-Requested-With':'XMLHttpRequest' }})
+                  .then(r=>r.json()).then(function(r){
+                    console.log('Images response:', r);
+                    if(!r.success) return;
+                    galleryState.items = r.images;
+                    var $wrap = $('#galleryManager').empty();
+                    r.images.forEach(function(img){
+                        console.log('Görsel işleniyor:', img);
+                        var $card = $('<div class="position-relative m-1" data-id="'+img.id+'" style="width:92px;height:92px;">\
+                            <img src="'+img.imageUrl+'" class="w-100 h-100 rounded border" style="object-fit:cover;"/>\
+                            <button type="button" class="btn btn-xs btn-danger position-absolute" style="top:2px; right:2px; line-height:1; padding:2px 4px;">&times;</button>\
+                            <button type="button" class="btn btn-xs '+(img.isPrimary?'btn-warning':'btn-outline-warning')+' position-absolute" style="bottom:2px; left:2px; line-height:1; padding:2px 4px;">★</button>\
+                        </div>');
+                        $wrap.append($card);
+                        
+                        // Ana ürün resmi güncelle
+                        if (img.isPrimary) {
+                            console.log('Ana ürün resmi güncelleniyor:', img.imageUrl);
+                            $('#imagePreview').html('<img src="' + img.imageUrl + '" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">');
+                            $('#previewThumb').attr('src', img.imageUrl).removeClass('d-none');
+                        }
+                    });
+                    if ($.fn && $.fn.sortable) {
+                        $wrap.sortable({
+                            placeholder: 'ui-state-highlight',
+                            stop: function(){
+                                var ordered = [];
+                                $wrap.children().each(function(){ ordered.push($(this).data('id')); });
+                                fetch('@Url.Action("ReorderImages","Products")?productId=@Model.Id', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+                                    body: JSON.stringify(ordered)
+                                });
+                            }
+                        });
+                    }
+                  });
+            }
+            refreshGallery();
+
+            $('#AddImageBtn').on('click', function(){
+                var file = $('#GalleryPicker')[0].files[0];
+                if(!file){
+                    $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Önce bir dosya seçin.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                      .appendTo('.container-p-y').delay(2000).fadeOut(400,function(){ $(this).remove(); });
+                    return;
+                }
+                var form = new FormData();
+                form.append('ImageFile', file);
+                form.append('id', @Model.Id);
+                fetch('@Url.Action("UploadImage","Products")', {
+                    method: 'POST',
+                    body: form,
+                    headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(), 'X-Requested-With':'XMLHttpRequest' }
+                }).then(r=>r.json()).then(function(r){
+                    if(r && r.success){ refreshGallery(); $('#GalleryPicker').val(''); }
+                    else {
+                        $('<div class="alert alert-danger alert-dismissible fade show" role="alert">'+((r&&r.message)||'Yükleme sırasında hata oluştu')+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                          .appendTo('.container-p-y').delay(2500).fadeOut(400,function(){ $(this).remove(); });
+                    }
+                }).catch(function(){
+                    $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Yükleme sırasında hata oluştu<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                      .appendTo('.container-p-y').delay(2500).fadeOut(400,function(){ $(this).remove(); });
+                });
+            });
+
+            $('#galleryManager').on('click', '.btn-danger', function(){
+                var id = $(this).closest('[data-id]').data('id');
+                fetch('@Url.Action("DeleteImage","Products")', {
+                    method: 'POST',
+                    headers: { 'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8', 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(), 'X-Requested-With':'XMLHttpRequest' },
+                    body: new URLSearchParams({ id: id })
+                }).then(r=>r.json()).then(function(r){ if(r && r.success){ refreshGallery(); } else {
+                    $('<div class="alert alert-danger alert-dismissible fade show" role="alert">'+((r&&r.message)||'Hata')+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                      .appendTo('.container-p-y').delay(2500).fadeOut(400,function(){ $(this).remove(); });
+                }});
+            });
+            $('#galleryManager').on('click', '.btn-outline-warning, .btn-warning', function(){
+                var id = $(this).closest('[data-id]').data('id');
+                console.log('Kapak fotoğrafı seçiliyor, ID:', id);
+                fetch('@Url.Action("SetCoverImage","Products")', {
+                    method: 'POST',
+                    headers: { 'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8', 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(), 'X-Requested-With':'XMLHttpRequest' },
+                    body: new URLSearchParams({ id: id })
+                }).then(r=>r.json()).then(function(r){ 
+                    console.log('SetCoverImage response:', r);
+                    if(r && r.success){ 
+                        // Kapak fotoğrafı seçildi, ana resmi hemen güncelle
+                        var selectedImage = galleryState.items.find(item => item.id === id);
+                        if (selectedImage) {
+                            console.log('Seçilen görsel ana resim olarak ayarlanıyor:', selectedImage.imageUrl);
+                            $('#imagePreview').html('<img src="' + selectedImage.imageUrl + '" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">');
+                            $('#previewThumb').attr('src', selectedImage.imageUrl).removeClass('d-none');
+                            
+                            // Başarı mesajı göster
+                            $('<div class="alert alert-success alert-dismissible fade show" role="alert">Kapak fotoğrafı başarıyla güncellendi!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                              .appendTo('.container-p-y').delay(2000).fadeOut(400,function(){ $(this).remove(); });
+                        }
+                        refreshGallery(); 
+                    } else {
+                        $('<div class="alert alert-danger alert-dismissible fade show" role="alert">'+((r&&r.message)||'Hata')+'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                          .appendTo('.container-p-y').delay(2500).fadeOut(400,function(){ $(this).remove(); });
+                    }
+                }).catch(function(error){
+                    console.error('SetCoverImage error:', error);
+                    $('<div class="alert alert-danger alert-dismissible fade show" role="alert">Kapak fotoğrafı seçilirken hata oluştu<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+                      .appendTo('.container-p-y').delay(2500).fadeOut(400,function(){ $(this).remove(); });
+                });
+            });
+
+            // Form validation
+            $('form').on('submit', function(e) {
+                var isValid = true;
+                
+                // Zorunlu alanları kontrol et
+                if (!$('#Name').val().trim()) {
+                    $('#Name').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Name').removeClass('is-invalid');
+                }
+                
+                if (!$('#Price').val() || parseFloat($('#Price').val()) <= 0) {
+                    $('#Price').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Stock').removeClass('is-invalid');
+                }
+                
+                if (!$('#Stock').val() || parseInt($('#Stock').val()) < 0) {
+                    $('#Stock').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Stock').removeClass('is-invalid');
+                }
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Lütfen zorunlu alanları doldurun.');
+                }
+            });
+        });
+    </script>
+} 

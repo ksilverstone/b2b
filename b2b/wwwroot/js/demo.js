@@ -42,6 +42,18 @@ $(function() {
     }
 });
 
+// Catalog card hover effects
+$(function(){
+    $(document).on('mouseenter', '.card.h-100.shadow-sm.border-0', function(){
+        $(this).css({boxShadow:'0 .5rem 1rem rgba(0,0,0,.15)', transform:'translateY(-2px)'});
+        $(this).find('.card-img-top img').css({transform:'scale(1.05)'});
+    });
+    $(document).on('mouseleave', '.card.h-100.shadow-sm.border-0', function(){
+        $(this).css({boxShadow:'', transform:''});
+        $(this).find('.card-img-top img').css({transform:'scale(1)'});
+    });
+});
+
 $(function() {
     $('body').append('' +
         '<div id="ui-builder" class="ui-builder">' +

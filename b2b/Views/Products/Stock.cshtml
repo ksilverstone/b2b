@@ -1,0 +1,307 @@
+@model b2b.Models.ProductListViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Stok Takibi";
+    ViewBag.ActivePage = "Products";
+}
+
+<!-- [ content ] Start -->
+<div class="container-fluid flex-grow-1 container-p-y">
+    <div class="d-flex">
+        <div class="flex-grow-1">
+            <h4 class="font-weight-bold py-3 mb-0">Stok Takibi</h4>
+        </div>
+        <div class="">
+            <a href="@Url.Action("List", "Products")" class="btn btn-secondary btn-glow-secondary">
+                <span class="ion ion-md-arrow-back"></span>&nbsp; Geri Dön
+            </a>
+        </div>
+    </div>
+    <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+            <li class="breadcrumb-item">Ürünler</li>
+            <li class="breadcrumb-item"><a href="@Url.Action("List", "Products")">Ürün Listesi</a></li>
+            <li class="breadcrumb-item active">Stok Takibi</li>
+        </ol>
+    </div>
+
+    <!-- Stok Özeti -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-big font-weight-bold">@Model.Products.Count(p => p.IsLowStock)</div>
+                            <div class="text-muted">Kritik Stok</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="feather icon-alert-triangle text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-big font-weight-bold">@Model.Products.Count(p => !p.IsLowStock && p.Stock > 0)</div>
+                            <div class="text-muted">Normal Stok</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="feather icon-check-circle text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-big font-weight-bold">@Model.Products.Count(p => p.Stock == 0)</div>
+                            <div class="text-muted">Stok Yok</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="feather icon-x-circle text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-big font-weight-bold">@Model.Products.Count()</div>
+                            <div class="text-muted">Toplam Ürün</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="feather icon-package text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        @Html.AntiForgeryToken()
+        <div class="card-datatable table-responsive">
+            <table id="stock-table" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Ürün</th>
+                        <th>SKU</th>
+                        <th>Kategori</th>
+                        <th>Mevcut Stok</th>
+                        <th>Kritik Stok</th>
+                        <th>Durum</th>
+                        <th>Son Güncelleme</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Products.Any())
+                    {
+                        @foreach (var product in Model.Products.OrderBy(p => p.Stock))
+                        {
+                            string rowClass = "";
+                            if (product.IsLowStock)
+                            {
+                                rowClass = "table-warning";
+                            }
+                            else if (product.Stock == 0)
+                            {
+                                rowClass = "table-danger";
+                            }
+                            
+                            <tr class="@rowClass">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                        {
+                                            <img src="@product.ImageUrl" alt="@product.Name" class="ui-w-40 rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <div class="ui-w-40 rounded bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="feather icon-package text-muted"></i>
+                                            </div>
+                                        }
+                                        <div class="ml-3">
+                                            <div class="font-weight-semibold">@product.Name</div>
+                                            @if (!string.IsNullOrEmpty(product.Description))
+                                            {
+                                                <div class="text-muted small">
+                                                    @if (product.Description.Length > 30)
+                                                    {
+                                                        @(product.Description.Substring(0, 30) + "...")
+                                                    }
+                                                    else
+                                                    {
+                                                        @product.Description
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@(product.SKU ?? "-")</td>
+                                <td>@(product.Category ?? "-")</td>
+                                <td>
+                                    @if (product.IsLowStock || product.Stock == 0)
+                                    {
+                                        <span class="font-weight-semibold text-danger">
+                                            @product.Stock @product.Unit
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="font-weight-semibold text-success">
+                                            @product.Stock @product.Unit
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="text-muted">@product.MinStock @product.Unit</span>
+                                </td>
+                                <td>
+                                    @if (product.Stock == 0)
+                                    {
+                                        <span class="badge badge-danger">Stok Yok</span>
+                                    }
+                                    else if (product.IsLowStock)
+                                    {
+                                        <span class="badge badge-warning">Kritik Stok</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-success">Normal</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (product.UpdatedDate.HasValue)
+                                    {
+                                        <span class="text-muted">@product.UpdatedDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">@product.CreatedDate.ToString("dd.MM.yyyy HH:mm")</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addStock(@product.Id, '@product.Name')" title="Stok Ekle">
+                                            <i class="feather icon-plus"></i>
+                                        </button>
+                                        <a href="@Url.Action("Edit", "Products", new { id = product.Id })" class="btn btn-sm btn-outline-secondary" title="Düzenle">
+                                            <i class="feather icon-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="feather icon-package" style="font-size: 3rem;"></i>
+                                    <div class="mt-2">Henüz ürün eklenmemiş</div>
+                                    <a href="@Url.Action("Create", "Products")" class="btn btn-primary btn-sm mt-2">İlk Ürününü Ekle</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- [ content ] End -->
+
+<!-- Stok Ekleme Modal -->
+<div class="modal fade" id="addStockModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Stok Ekle</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addStockForm">
+                    <input type="hidden" id="productId" name="productId">
+                    <div class="form-group">
+                        <label for="productName" class="form-label">Ürün</label>
+                        <input type="text" id="productName" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity" class="form-label">Miktar <span class="text-danger">*</span></label>
+                        <input type="number" id="quantity" name="quantity" class="form-control" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="form-label">Açıklama</label>
+                        <textarea id="description" name="description" class="form-control" rows="3" placeholder="Stok ekleme açıklaması"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" onclick="saveStock()">Stok Ekle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            if ($.fn && $.fn.DataTable) {
+                $('#stock-table').DataTable({
+                    "language": {"url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"},
+                    "pageLength": 25,
+                    "order": [[3, "asc"]],
+                    "responsive": true
+                });
+            }
+        });
+
+        function addStock(productId, productName) {
+            $('#productId').val(productId);
+            $('#productName').val(productName);
+            $('#quantity').val('');
+            $('#description').val('');
+            $('#addStockModal').modal('show');
+        }
+
+        function saveStock() {
+            var productId = $('#productId').val();
+            var quantity = $('#quantity').val();
+            var description = $('#description').val();
+
+            if (!quantity || parseInt(quantity) <= 0) {
+                alert('Lütfen geçerli bir miktar girin.');
+                return;
+            }
+
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            fetch('@Url.Action("AddStock","Products")', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8', 'RequestVerificationToken': token, 'X-Requested-With':'XMLHttpRequest' },
+                body: new URLSearchParams({ productId: productId, quantity: quantity, description: description })
+            }).then(r=>r.json()).then(function(response){
+                if (response && response.success) { $('#addStockModal').modal('hide'); location.reload(); }
+                else { alert('Stok eklenirken bir hata oluştu: ' + (response && response.message || '')); }
+            }).catch(function(){ alert('Stok eklenirken bir hata oluştu.'); });
+        }
+    </script>
+} 

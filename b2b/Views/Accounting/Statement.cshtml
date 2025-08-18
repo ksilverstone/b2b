@@ -181,7 +181,7 @@
                                                                                           <div class="col-md-6">
                                                   <div class="form-group">
                                                       <label class="form-label">Cari Grubu</label>
-                                                      <input type="text" class="form-control" value="@Model.Account.Group" readonly>
+                                                      <input type="text" class="form-control" value="@Model.Account.CustomerGroup" readonly>
                                                   </div>
                                               </div>
                                         </div>
@@ -337,9 +337,10 @@
     <script src="~/js/sidenav.js"></script>
     <script src="~/js/layout-helpers.js"></script>
     <script src="~/js/material-ripple.js"></script>
+    <script src="~/js/app-sidenav-init.js"></script>
 
-    <!-- Demo -->
-    <script src="~/js/demo.js"></script>
+    <!-- Demo disabled to avoid duplicate togglers -->
+    <!-- <script src="~/js/demo.js"></script> -->
 
     <script>
         $(function () {
@@ -352,7 +353,7 @@
         }
 
         function exportPDF() {
-            alert('PDF export özelliği yakında eklenecek!');
+            showAlert('PDF export özelliği yakında eklenecek!', 'info');
         }
 
         function newCollection() {
@@ -376,7 +377,7 @@
 
             // Validasyon
             if (!transactionData.DocumentNo || !transactionData.Description || !transactionData.Amount || !transactionData.TransactionType) {
-                alert('Tüm alanları doldurunuz!');
+                showAlert('Tüm alanları doldurunuz!', 'warning');
                 return;
             }
 
@@ -388,7 +389,6 @@
                 data: JSON.stringify(transactionData),
                 success: function(response) {
                     if (response.success) {
-                        alert(response.message);
                         $('#modal-add-transaction').modal('hide');
                         // Bakiye güncelleme - işlem geçmişi tablosundaki son satırın bakiye sütununu güncelle
                         var lastBalanceCell = $('#transactions-table tbody tr:first td:last span');
@@ -420,25 +420,30 @@
                         $('#TransactionType').val('Debit');
                         
                         // Başarı mesajı göster
-                        var successMsg = $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
-                            '<strong>Başarılı!</strong> İşlem başarıyla eklendi.' +
-                            '<button type="button" class="close" data-dismiss="alert">' +
-                            '<span aria-hidden="true">&times;</span></button></div>');
-                        
-                        $('.container-fluid').prepend(successMsg);
-                        
-                        // 3 saniye sonra mesajı kaldır
-                        setTimeout(function() {
-                            successMsg.fadeOut();
-                        }, 3000);
+                        showAlert('İşlem başarıyla eklendi.', 'success');
                     } else {
-                        alert('Hata: ' + response.message);
+                        showAlert('Hata: ' + response.message, 'danger');
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Bir hata oluştu! Detay: ' + xhr.responseText);
+                    showAlert('Bir hata oluştu! Detay: ' + xhr.responseText, 'danger');
                 }
             });
+        }
+        
+        // Alert gösterme fonksiyonu
+        function showAlert(message, type) {
+            var alertDiv = $('<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                '<strong>' + (type === 'success' ? 'Başarılı!' : type === 'danger' ? 'Hata!' : type === 'warning' ? 'Uyarı!' : 'Bilgi!') + '</strong> ' + message +
+                '<button type="button" class="close" data-dismiss="alert">' +
+                '<span aria-hidden="true">&times;</span></button></div>');
+            
+            $('.container-fluid').prepend(alertDiv);
+            
+            // 3 saniye sonra mesajı kaldır
+            setTimeout(function() {
+                alertDiv.fadeOut();
+            }, 3000);
         }
     </script>
 

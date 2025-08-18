@@ -1,0 +1,328 @@
+@model b2b.Models.CreateProductRequest
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Yeni Ürün Ekle";
+    ViewBag.ActivePage = "Products";
+}
+
+<!-- [ content ] Start -->
+<div class="container-fluid flex-grow-1 container-p-y">
+    <div class="d-flex">
+        <div class="flex-grow-1">
+            <h4 class="font-weight-bold py-3 mb-0">Yeni Ürün Ekle</h4>
+        </div>
+        <div class="">
+            <a href="@Url.Action("List", "Products")" class="btn btn-secondary btn-glow-secondary">
+                <span class="ion ion-md-arrow-back"></span>&nbsp; Geri Dön
+            </a>
+        </div>
+    </div>
+    <div class="text-muted small mt-0 mb-4 d-block breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+            <li class="breadcrumb-item">Ürünler</li>
+            <li class="breadcrumb-item"><a href="@Url.Action("List", "Products")">Ürün Listesi</a></li>
+            <li class="breadcrumb-item active">Yeni Ürün Ekle</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <!-- Sol Kolon -->
+                    <div class="col-md-8">
+                        <h6 class="small font-weight-semibold mb-4">Temel Bilgiler</h6>
+                        
+                        <div class="form-group">
+                            <label asp-for="Name" class="form-label">Ürün Adı <span class="text-danger">*</span>
+                                <span class="text-muted" data-toggle="tooltip" title="Müşterilerin göreceği ürün adı.">
+                                    <i class="feather icon-info"></i>
+                                </span>
+                            </label>
+                            <input asp-for="Name" type="text" class="form-control is-required" placeholder="Ürün adını girin">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label">Açıklama
+                                <span class="text-muted" data-toggle="tooltip" title="Kısa ve bilgilendirici açıklama yazın.">
+                                    <i class="feather icon-info"></i>
+                                </span>
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Ürün açıklamasını girin"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="SKU" class="form-label">SKU
+                                        <span class="text-muted" data-toggle="tooltip" title="Stok takip için benzersiz kod."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="SKU" type="text" class="form-control" placeholder="SKU kodu">
+                                    <span asp-validation-for="SKU" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Category" class="form-label">Kategori
+                                        <span class="text-muted" data-toggle="tooltip" title="Ürünün ait olduğu kategori."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Category" type="text" class="form-control" placeholder="Kategori adı">
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Brand" class="form-label">Marka
+                                        <span class="text-muted" data-toggle="tooltip" title="Ürünün marka bilgisi."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Brand" type="text" class="form-control" placeholder="Marka adı">
+                                    <span asp-validation-for="Brand" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Unit" class="form-label">Birim
+                                        <span class="text-muted" data-toggle="tooltip" title="Adet, Kg vb."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <select asp-for="Unit" class="custom-select">
+                                        <option value="Adet">Adet</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="Lt">Lt</option>
+                                        <option value="Mt">Mt</option>
+                                        <option value="Paket">Paket</option>
+                                        <option value="Kutu">Kutu</option>
+                                    </select>
+                                    <span asp-validation-for="Unit" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Price" class="form-label">Fiyat (₺) <span class="text-danger">*</span>
+                                        <span class="text-muted" data-toggle="tooltip" title="Vergi dahil satış fiyatı."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Price" type="number" step="0.01" class="form-control is-required" placeholder="0.00" onfocus="if(this.value=='0' || this.value=='0.00'){this.value='';}" onblur="if(this.value===''){this.value='0';}">
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="Stock" class="form-label">Stok Miktarı <span class="text-danger">*</span>
+                                        <span class="text-muted" data-toggle="tooltip" title="Mevcut stok miktarı."><i class="feather icon-info"></i></span>
+                                    </label>
+                                    <input asp-for="Stock" type="number" class="form-control is-required" placeholder="0" onfocus="if(this.value=='0'){this.value='';}" onblur="if(this.value===''){this.value='0';}">
+                                    <span asp-validation-for="Stock" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="MinStock" class="form-label">Kritik Stok</label>
+                                    <input asp-for="MinStock" type="number" class="form-control" placeholder="0">
+                                    <span asp-validation-for="MinStock" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ürün Fotoğrafı</label>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab-url" role="tab">URL</a></li>
+                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-upload" role="tab">Dosya Yükle</a></li>
+                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-multi" role="tab">Çoklu</a></li>
+                            </ul>
+                            <div class="tab-content p-3 border border-top-0 rounded-bottom">
+                                <div class="tab-pane fade show active" id="tab-url" role="tabpanel">
+                                    <input asp-for="ImageUrl" type="url" class="form-control" placeholder="https://example.com/image.jpg">
+                                </div>
+                                <div class="tab-pane fade" id="tab-upload" role="tabpanel">
+                                    <input type="file" name="ImageFile" id="ImageFile" accept="image/*" class="form-control-file">
+                                </div>
+                                <div class="tab-pane fade" id="tab-multi" role="tabpanel">
+                                    <input type="file" name="GalleryFiles" id="GalleryFiles" accept="image/*" class="form-control-file" multiple>
+                                    <small class="text-muted d-block mt-1">Birden fazla görsel seçebilirsiniz.</small>
+                                    <div id="galleryPreview" class="d-flex flex-wrap mt-2"></div>
+                                    <div class="form-group mt-2">
+                                        <label class="form-label">Kapak Görseli</label>
+                                        <select name="CoverIndex" id="CoverIndex" class="custom-select">
+                                            <option value="">Seçilmedi</option>
+                                        </select>
+                                        <small class="text-muted">Seçilirse, ürünün kapak görseli olarak kullanılır.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Sağ Kolon -->
+                    <div class="col-md-4">
+                        <h6 class="small font-weight-semibold mb-4">Durum</h6>
+                        
+                        <!-- Aktif Durum kaldırıldı: Aşağıdaki Durum alanı kullanılacak -->
+                        <div class="form-group">
+                            <label class="form-label">Durum</label>
+                            <select asp-for="IsActive" class="custom-select">
+                                <option value="true">Aktif</option>
+                                <option value="false">Pasif</option>
+                            </select>
+                        </div>
+
+                        <hr class="m-0">
+
+                        <h6 class="small font-weight-semibold mb-4 mt-4">Önizleme</h6>
+                        <div class="text-center">
+                            <div id="imagePreview" class="ui-w-200 mx-auto mb-3" style="width: 240px; height: 240px; background-color: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="feather icon-image text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                            <small class="text-muted d-block mb-3">Ürün resmi burada görünecek</small>
+
+                            <div class="card">
+                                <div class="card-header"><strong>Sayfadaki Önizleme</strong></div>
+                                <div class="card-body">
+                                    <div class="media">
+                                        <img id="previewThumb" src="" class="d-none mr-3 rounded" style="width:72px;height:72px;object-fit:cover;" />
+                                        <div class="media-body">
+                                            <h5 class="mt-0" id="previewName">Ürün Adı</h5>
+                                            <div class="text-muted small" id="previewCategory">Kategori • Marka</div>
+                                            <div class="mt-2"><span class="badge badge-success" id="previewPrice">0,00 ₺</span> <span class="badge badge-secondary" id="previewStock">Stok: 0</span></div>
+                                            <p class="mt-2 mb-0" id="previewDesc">Kısa açıklama burada görünecek.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="m-0">
+
+                <div class="text-right mt-3">
+                    <a href="@Url.Action("List", "Products")" class="btn btn-default">İptal</a>
+                    <button type="submit" class="btn btn-primary">Ürünü Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- [ content ] End -->
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Resim URL değiştiğinde önizleme göster
+            $('#ImageUrl').on('input', function() {
+                var imageUrl = $(this).val();
+                var preview = $('#imagePreview');
+                
+                if (imageUrl && imageUrl.trim() !== '') {
+                    preview.html('<img src="' + imageUrl + '" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">');
+                    $('#previewThumb').attr('src', imageUrl).removeClass('d-none');
+                } else {
+                    preview.html('<i class="feather icon-image text-muted" style="font-size: 3rem;"></i>');
+                    $('#previewThumb').addClass('d-none');
+                }
+            });
+
+            // Dosya yükleme önizleme
+            $('#ImageFile').on('change', function(e){
+                var file = e.target.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function(ev){
+                    var url = ev.target.result;
+                    $('#imagePreview').html('<img src="' + url + '" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">');
+                    $('#previewThumb').attr('src', url).removeClass('d-none');
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Çoklu galeri önizleme
+            $('#GalleryFiles').on('change', function(e){
+                var files = Array.from(e.target.files || []);
+                var $wrap = $('#galleryPreview').empty();
+                var $cover = $('#CoverIndex').empty().append('<option value="">Seçilmedi</option>');
+                files.forEach(function(file, idx){
+                    var reader = new FileReader();
+                    reader.onload = function(ev){
+                        var url = ev.target.result;
+                        var thumb = $('<div class="m-1 border rounded" style="width:72px;height:72px;overflow:hidden;">\
+                                        <img src="'+url+'" style="width:100%;height:100%;object-fit:cover;"/>\
+                                       </div>');
+                        $wrap.append(thumb);
+                        if (idx === 0) {
+                            $('#imagePreview').html('<img src="' + url + '" class="img-fluid rounded" style="max-width: 100%; max-height: 100%; object-fit: cover;">');
+                            $('#previewThumb').attr('src', url).removeClass('d-none');
+                            $('#CoverIndex').val('0');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                    $cover.append('<option value="'+idx+'">'+(idx+1)+'. Görsel</option>');
+                });
+            });
+
+            // Dinamik önizleme bilgi güncelleme
+            $('#Name').on('input', function(){ $('#previewName').text($(this).val() || 'Ürün Adı'); });
+            $('#Category, #Brand').on('input', function(){
+                var c = $('#Category').val(); var b = $('#Brand').val();
+                var text = (c?c:'Kategori') + ' • ' + (b?b:'Marka');
+                $('#previewCategory').text(text);
+            });
+            $('#Price').on('input', function(){
+                var v = parseFloat($(this).val());
+                $('#previewPrice').text(isNaN(v) ? '0,00 ₺' : v.toLocaleString('tr-TR', {minimumFractionDigits:2}) + ' ₺');
+            });
+            $('#Stock, #Unit').on('input change', function(){
+                var s = parseFloat($('#Stock').val()) || 0; var u = $('#Unit').val() || '';
+                $('#previewStock').text('Stok: ' + s + (u? ' ' + u: ''));
+            });
+            $('#Description').on('input', function(){
+                var d = $(this).val() || 'Kısa açıklama burada görünecek.';
+                $('#previewDesc').text(d.length>120 ? d.substring(0,117)+'...' : d);
+            });
+
+            // Form validation
+            $('form').on('submit', function(e) {
+                var isValid = true;
+                
+                // Zorunlu alanları kontrol et
+                if (!$('#Name').val().trim()) {
+                    $('#Name').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Name').removeClass('is-invalid');
+                }
+                
+                if (!$('#Price').val() || parseFloat($('#Price').val()) <= 0) {
+                    $('#Price').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Price').removeClass('is-invalid');
+                }
+                
+                if (!$('#Stock').val() || parseInt($('#Stock').val()) < 0) {
+                    $('#Stock').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#Stock').removeClass('is-invalid');
+                }
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Lütfen zorunlu alanları doldurun.');
+                }
+            });
+        });
+    </script>
+}

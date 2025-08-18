@@ -28,7 +28,7 @@ namespace b2b.Models
         
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         
-        // Navigation property
+        // İlişki alanı
         public virtual Customer? Customer { get; set; }
     }
 } 
